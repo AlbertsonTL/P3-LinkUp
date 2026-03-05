@@ -1,0 +1,111 @@
+@model LinkUp.Web.Models.FriendRequestsIndexViewModel
+@{ ViewData["Title"] = "Solicitudes de amistad"; }
+
+<h4 class="fw-bold mb-4"><i class="fas fa-user-plus me-2 text-primary"></i>Solicitudes de amistad</h4>
+
+<div class="row">
+    <!-- Solicitudes recibidas -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+            <div class="card-header bg-primary text-white rounded-top-4">
+                <h6 class="mb-0">
+                    <i class="fas fa-inbox me-2"></i>Solicitudes recibidas (@Model.PendingRequests.Count())
+                </h6>
+            </div>
+            <div class="card-body p-0">
+                @foreach (var req in Model.PendingRequests)
+                {
+                    <div class="p-3 border-bottom">
+                        <div class="d-flex align-items-center mb-2">
+                            @if (req.SenderProfilePicture != null)
+                            {
+                                <img src="@req.SenderProfilePicture" class="rounded-circle me-2"
+                                     style="width:38px;height:38px;object-fit:cover" />
+                            }
+                            else
+                            {
+                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2"
+                                     style="width:38px;height:38px;font-size:13px">
+                                    @req.SenderUserName.First().ToString().ToUpper()
+                                </div>
+                            }
+                            <div>
+                                <span class="fw-semibold">@req.SenderUserName</span>
+                                <small class="text-muted d-block">
+                                    @req.CommonFriendsCount amigos en común &middot; @req.CreatedAt.ToString("dd/MM/yyyy")
+                                </small>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a asp-action="ConfirmAccept" asp-route-requestId="@req.Id" class="btn btn-sm btn-success">
+                                <i class="fas fa-check me-1"></i>Aceptar
+                            </a>
+                            <a asp-action="ConfirmReject" asp-route-requestId="@req.Id" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-times me-1"></i>Rechazar
+                            </a>
+                        </div>
+                    </div>
+                }
+                @if (!Model.PendingRequests.Any())
+                {
+                    <p class="text-center text-muted py-4">No tienes solicitudes pendientes.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Solicitudes enviadas -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-secondary text-white rounded-top-4 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0"><i class="fas fa-paper-plane me-2"></i>Solicitudes enviadas (@Model.SentRequests.Count())</h6>
+                <a asp-action="NewRequest" class="btn btn-sm btn-light">
+                    <i class="fas fa-plus me-1"></i>Nueva solicitud
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @foreach (var req in Model.SentRequests)
+                {
+                    <div class="p-3 border-bottom">
+                        <div class="d-flex align-items-center mb-2">
+                            @if (req.ReceiverProfilePicture != null)
+                            {
+                                <img src="@req.ReceiverProfilePicture" class="rounded-circle me-2"
+                                     style="width:38px;height:38px;object-fit:cover" />
+                            }
+                            else
+                            {
+                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2"
+                                     style="width:38px;height:38px;font-size:13px">
+                                    @req.ReceiverUserName.First().ToString().ToUpper()
+                                </div>
+                            }
+                            <div>
+                                <span class="fw-semibold">@req.ReceiverUserName</span>
+                                <small class="text-muted d-block">
+                                    @req.CommonFriendsCount amigos en común &middot; @req.CreatedAt.ToString("dd/MM/yyyy")
+                                </small>
+                                @{
+                                    var statusText = req.Status switch
+                                    {
+                                        LinkUp.Domain.Enums.FriendRequestStatus.Accepted => ("bg-success", "Aceptada"),
+                                        LinkUp.Domain.Enums.FriendRequestStatus.Rejected => ("bg-danger", "Rechazada"),
+                                        _ => ("bg-warning text-dark", "En espera de respuesta")
+                                    };
+                                }
+                                <span class="badge @statusText.Item1 mt-1">@statusText.Item2</span>
+                            </div>
+                        </div>
+                        <a asp-action="ConfirmDelete" asp-route-requestId="@req.Id" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash me-1"></i>Eliminar
+                        </a>
+                    </div>
+                }
+                @if (!Model.SentRequests.Any())
+                {
+                    <p class="text-center text-muted py-4">No has enviado solicitudes.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

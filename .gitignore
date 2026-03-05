@@ -1,0 +1,11 @@
+# .gitignore en la raíz
+bin/
+obj/
+*.user
+.vs/
+appsettings.Development.json
+appsettings.Production.json
+*.pfx
+tessdata/
+wwwroot/uploads/
+*.db

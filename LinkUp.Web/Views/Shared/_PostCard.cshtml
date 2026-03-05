@@ -1,0 +1,123 @@
+@model LinkUp.Application.DTOs.Response.PostResponseDto
+@{
+    // Lee desde ViewData (pasado explicitamente), con fallback a 0
+    var currentUserId = (ViewData["CurrentUserId"] as int?) ?? 0;
+    var returnTo = (ViewData["ReturnTo"] as string) ?? "Index";
+    string GetYouTubeEmbed(string url)
+    {
+        var videoId = "";
+        if (url.Contains("v=")) videoId = url.Split("v=")[1].Split("&")[0];
+        else if (url.Contains("youtu.be/")) videoId = url.Split("youtu.be/")[1].Split("?")[0];
+        return $"https://www.youtube.com/embed/{videoId}";
+    }
+}
+
+<div class="card shadow-sm border-0 rounded-4 mb-4">
+    <div class="card-body p-4">
+        <div class="d-flex align-items-center mb-3">
+            @if (Model.UserProfilePicture != null)
+            {
+                <img src="@Model.UserProfilePicture" class="rounded-circle me-2 border" style="width:40px;height:40px;object-fit:cover" alt="@Model.UserName" />
+            }
+            else
+            {
+                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-2 text-white fw-bold" style="width:40px;height:40px;">
+                    @Model.UserName.First().ToString().ToUpper()
+                </div>
+            }
+            <div>
+                <a href="/Friends/Publications/@Model.UserId" class="fw-bold text-dark text-decoration-none">@Model.UserName</a>
+                <small class="text-muted d-block">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+            </div>
+            @if (Model.UserId == currentUserId)
+            {
+                <div class="ms-auto">
+                    <a asp-controller="Posts" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary me-1">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <form asp-controller="Posts" asp-action="Delete" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar publicación?')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+
+        <p class="mb-3">@Model.Content</p>
+
+        @if (Model.MediaType == LinkUp.Domain.Enums.PostMediaType.Image && Model.ImagePath != null)
+        {
+            <img src="@Model.ImagePath" class="img-fluid rounded-3 mb-3" style="max-height:400px;width:100%;object-fit:cover" alt="Post image" />
+        }
+        @if (Model.MediaType == LinkUp.Domain.Enums.PostMediaType.Video && Model.YouTubeUrl != null)
+        {
+            <div class="ratio ratio-16x9 mb-3">
+                <iframe src="@GetYouTubeEmbed(Model.YouTubeUrl)" allowfullscreen class="rounded-3"></iframe>
+            </div>
+        }
+
+        <div class="d-flex gap-2 mb-3 pb-3 border-bottom">
+            @if (Model.CurrentUserReaction == null || Model.CurrentUserReaction == LinkUp.Domain.Enums.ReactionType.Dislike)
+            {
+                <form asp-controller="Posts" asp-action="React" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="postId" value="@Model.Id" />
+                    <input type="hidden" name="isLike" value="true" />
+                    <input type="hidden" name="returnTo" value="@returnTo" />
+                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-thumbs-up me-1"></i>Me gusta (@Model.LikeCount)
+                    </button>
+                </form>
+            }
+            else
+            {
+                <span class="btn btn-sm btn-primary disabled"><i class="fas fa-thumbs-up me-1"></i>Me gusta (@Model.LikeCount)</span>
+            }
+
+            @if (Model.CurrentUserReaction == null || Model.CurrentUserReaction == LinkUp.Domain.Enums.ReactionType.Like)
+            {
+                <form asp-controller="Posts" asp-action="React" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="postId" value="@Model.Id" />
+                    <input type="hidden" name="isLike" value="false" />
+                    <input type="hidden" name="returnTo" value="@returnTo" />
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-thumbs-down me-1"></i>No me gusta (@Model.DislikeCount)
+                    </button>
+                </form>
+            }
+            else
+            {
+                <span class="btn btn-sm btn-danger disabled"><i class="fas fa-thumbs-down me-1"></i>No me gusta (@Model.DislikeCount)</span>
+            }
+        </div>
+
+        <!-- Comments -->
+        <div class="comments-section">
+            @{
+                var commentViewData = new ViewDataDictionary(ViewData);
+                commentViewData["PostId"] = Model.Id;
+                commentViewData["CurrentUserId"] = currentUserId;
+                commentViewData["ReturnTo"] = returnTo;
+            }
+            @foreach (var comment in Model.Comments.Where(c => c.ParentCommentId == null))
+            {
+                <partial name="_CommentItem" model="comment" view-data="commentViewData" />
+            }
+        </div>
+
+        <!-- Add Comment Form -->
+        <form asp-controller="Posts" asp-action="AddComment" method="post" class="mt-3">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="PostId" value="@Model.Id" />
+            <input type="hidden" name="returnTo" value="@returnTo" />
+            <div class="input-group">
+                <input type="text" name="Content" class="form-control" placeholder="Agrega un comentario..." required />
+                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </form>
+    </div>
+</div>

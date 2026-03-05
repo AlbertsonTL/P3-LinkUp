@@ -1,0 +1,47 @@
+@model LinkUp.Web.Models.ConfirmRejectRequestViewModel
+@{ ViewData["Title"] = "Confirmar rechazar solicitud"; }
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow border-0 rounded-4">
+            <div class="card-body p-5 text-center">
+                <i class="fas fa-user-times fa-3x text-danger mb-3"></i>
+                <h4 class="fw-bold mb-3">¿Rechazar solicitud?</h4>
+
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    @if (Model.SenderProfilePicture != null)
+                    {
+                        <img src="@Model.SenderProfilePicture" class="rounded-circle me-2 border"
+                             style="width:48px;height:48px;object-fit:cover" />
+                    }
+                    else
+                    {
+                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2"
+                             style="width:48px;height:48px">
+                            @Model.SenderUserName.First().ToString().ToUpper()
+                        </div>
+                    }
+                    <span class="fw-semibold fs-5">@Model.SenderUserName</span>
+                </div>
+
+                <p class="text-muted mb-4">
+                    ¿Está seguro que desea rechazar la solicitud de amistad del usuario
+                    <strong>@Model.SenderUserName</strong>?
+                </p>
+
+                <div class="d-flex gap-3 justify-content-center">
+                    <form asp-action="Reject" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="requestId" value="@Model.RequestId" />
+                        <button type="submit" class="btn btn-danger px-4">
+                            <i class="fas fa-check me-2"></i>Rechazar
+                        </button>
+                    </form>
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

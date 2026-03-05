@@ -1,0 +1,11 @@
+@{ ViewData["Title"] = "Acceso denegado"; Layout = "_Layout"; }
+<div class="min-vh-100 d-flex align-items-center" style="background: linear-gradient(135deg, #dc3545, #6f42c1);">
+    <div class="container text-center text-white">
+        <i class="fas fa-lock fa-5x mb-4"></i>
+        <h1 class="fw-bold">Acceso Denegado</h1>
+        <p class="lead">Debe iniciar sesión para acceder a esta sección.</p>
+        <a asp-controller="Account" asp-action="Login" class="btn btn-light btn-lg mt-3">
+            <i class="fas fa-sign-in-alt me-2"></i>Iniciar sesión
+        </a>
+    </div>
+</div>

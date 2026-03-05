@@ -1,0 +1,102 @@
+@model LinkUp.Web.Models.SelectDirectionViewModel
+@{ ViewData["Title"] = "Seleccionar dirección"; }
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="page-header">
+            <h4><i class="fas fa-compass text-gold"></i>Dirección del barco</h4>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-xl">
+            <div class="card-body p-4">
+                <p class="mb-3">
+                    Barco de <strong class="text-navy">@Model.ShipSize posiciones</strong> —
+                    punto de inicio: fila <strong>@(Model.StartRow + 1)</strong>, columna <strong>@(Model.StartCol + 1)</strong>.
+                </p>
+
+                @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                {
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>@Model.ErrorMessage
+                    </div>
+                }
+
+                <form asp-action="PlaceShip" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="GameId" value="@Model.GameId" />
+                    <input type="hidden" name="ShipSize" value="@Model.ShipSize" />
+                    <input type="hidden" name="StartRow" value="@Model.StartRow" />
+                    <input type="hidden" name="StartCol" value="@Model.StartCol" />
+
+                    <div class="mb-4">
+                        <label class="form-label">¿Hacia dónde se extiende el barco?</label>
+                        <div class="d-grid gap-2">
+                            <label class="ship-option" id="opt-up">
+                                <input type="radio" name="Direction" value="0" class="d-none" onchange="selectDir(this,'opt-up')" />
+                                <span style="font-size:1.4rem">⬆️</span>
+                                <div>
+                                    <strong>Hacia arriba</strong>
+                                    <small class="d-block text-muted">El barco se extiende hacia las filas superiores</small>
+                                </div>
+                            </label>
+                            <label class="ship-option" id="opt-down">
+                                <input type="radio" name="Direction" value="1" class="d-none" onchange="selectDir(this,'opt-down')" />
+                                <span style="font-size:1.4rem">⬇️</span>
+                                <div>
+                                    <strong>Hacia abajo</strong>
+                                    <small class="d-block text-muted">El barco se extiende hacia las filas inferiores</small>
+                                </div>
+                            </label>
+                            <label class="ship-option" id="opt-left">
+                                <input type="radio" name="Direction" value="2" class="d-none" onchange="selectDir(this,'opt-left')" />
+                                <span style="font-size:1.4rem">⬅️</span>
+                                <div>
+                                    <strong>Hacia la izquierda</strong>
+                                    <small class="d-block text-muted">El barco se extiende hacia las columnas de la izquierda</small>
+                                </div>
+                            </label>
+                            <label class="ship-option" id="opt-right">
+                                <input type="radio" name="Direction" value="3" class="d-none" onchange="selectDir(this,'opt-right')" />
+                                <span style="font-size:1.4rem">➡️</span>
+                                <div>
+                                    <strong>Hacia la derecha</strong>
+                                    <small class="d-block text-muted">El barco se extiende hacia las columnas de la derecha</small>
+                                </div>
+                            </label>
+                        </div>
+                        <div id="dir-error" class="text-danger small mt-1" style="display:none">Debes seleccionar una dirección.</div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-gold" onclick="return validateDir()">
+                            <i class="fas fa-anchor me-2"></i>Posicionar barco
+                        </button>
+                        <a asp-action="PlacementBoard"
+                           asp-route-gameId="@Model.GameId"
+                           asp-route-shipSize="@Model.ShipSize"
+                           class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Elegir otra celda
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function selectDir(radio, optId) {
+    document.querySelectorAll('.ship-option').forEach(el => el.classList.remove('selected-ship'));
+    document.getElementById(optId).classList.add('selected-ship');
+}
+function validateDir() {
+    const selected = document.querySelector('input[name="Direction"]:checked');
+    if (!selected) {
+        document.getElementById('dir-error').style.display = 'block';
+        return false;
+    }
+    return true;
+}
+</script>
+}

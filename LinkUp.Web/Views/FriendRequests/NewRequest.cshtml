@@ -1,0 +1,84 @@
+@model LinkUp.Web.Models.NewFriendRequestViewModel
+@{ ViewData["Title"] = "Nueva solicitud de amistad"; }
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow border-0 rounded-4">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-4">
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    <h4 class="fw-bold mb-0">
+                        <i class="fas fa-user-plus me-2 text-primary"></i>Nueva solicitud de amistad
+                    </h4>
+                </div>
+
+                <!-- Búsqueda -->
+                <form asp-action="NewRequest" method="get" class="mb-4">
+                    <div class="input-group">
+                        <input type="text" name="search" value="@Model.Search" class="form-control"
+                               placeholder="Buscar por nombre de usuario..." />
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="fas fa-search me-1"></i>Buscar
+                        </button>
+                    </div>
+                </form>
+
+                <form asp-action="Send" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="All" class="alert alert-danger d-none"></div>
+
+                    <div class="list-group mb-4" style="max-height:400px;overflow-y:auto;">
+                        @foreach (var user in Model.AvailableUsers)
+                        {
+                            <label class="list-group-item list-group-item-action d-flex align-items-center py-3">
+                                <input type="radio" name="SelectedUserId" value="@user.Id" class="me-3 form-check-input" />
+                                @if (user.ProfilePicture != null)
+                                {
+                                    <img src="@user.ProfilePicture" class="rounded-circle me-2 border"
+                                         style="width:40px;height:40px;object-fit:cover" />
+                                }
+                                else
+                                {
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2"
+                                         style="width:40px;height:40px">
+                                        @user.UserName.First().ToString().ToUpper()
+                                    </div>
+                                }
+                                <div>
+                                    <span class="fw-semibold">@user.UserName</span>
+                                    <small class="text-muted d-block">@user.CommonFriendsCount amigos en común</small>
+                                </div>
+                            </label>
+                        }
+                    </div>
+
+                    @if (!Model.AvailableUsers.Any())
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-search fa-2x mb-2 d-block"></i>
+                            @if (!string.IsNullOrEmpty(Model.Search))
+                            {
+                                <span>No se encontraron usuarios con "@Model.Search"</span>
+                            }
+                            else
+                            {
+                                <span>No hay usuarios disponibles para enviar solicitudes.</span>
+                            }
+                        </div>
+                    }
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary" @(Model.AvailableUsers.Any() ? "" : "disabled")>
+                            <i class="fas fa-paper-plane me-2"></i>Enviar solicitud
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Volver
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

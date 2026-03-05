@@ -1,0 +1,41 @@
+@model LinkUp.Web.Models.FriendPublicationsViewModel
+@{
+    ViewData["Title"] = $"Publicaciones de {Model.FriendUserName}";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <img src="@(Model.FriendProfilePicture ?? "/images/default-avatar.png")"
+                 class="rounded-circle border" style="width:55px;height:55px;object-fit:cover" alt="foto" />
+            <div>
+                <h4 class="fw-bold mb-0">@Model.FriendUserName</h4>
+                <small class="text-muted">Publicaciones de este amigo</small>
+            </div>
+            <a asp-controller="Friends" asp-action="Index" class="btn btn-outline-secondary btn-sm ms-auto">
+                <i class="fas fa-arrow-left me-1"></i>Volver
+            </a>
+        </div>
+
+        @{
+            var postViewData = new ViewDataDictionary(ViewData);
+            postViewData["CurrentUserId"] = Model.CurrentUserId;
+            postViewData["ReturnTo"] = "Friends";
+        }
+
+        @if (Model.Posts != null && Model.Posts.Any())
+        {
+            @foreach (var post in Model.Posts)
+            {
+                <partial name="~/Views/Shared/_PostCard.cshtml" model="post" view-data="postViewData" />
+            }
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="fas fa-newspaper fa-3x mb-3"></i>
+                <p>@Model.FriendUserName aún no tiene publicaciones.</p>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,56 @@
+@model LinkUp.Web.Models.PlacementBoardViewModel
+@{
+    ViewData["Title"] = "Posicionar barco";
+    var placedSet = new HashSet<string>(Model.PlacedCells.Select(c => $"{c[0]},{c[1]}"));
+}
+
+<div class="row justify-content-center">
+    <div class="col-auto">
+        <div class="page-header">
+            <h4><i class="fas fa-map text-gold"></i>Selecciona la celda inicial</h4>
+        </div>
+
+        <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-body py-2 px-3">
+                <p class="mb-1">
+                    Posicionando barco de <strong class="text-navy">@Model.ShipSize posiciones</strong>.
+                    Haz clic en una celda <strong>libre</strong> para elegir el punto de inicio.
+                </p>
+                <div class="d-flex gap-3 small">
+                    <span><span style="display:inline-block;width:14px;height:14px;background:var(--lu-navy);border-radius:3px;vertical-align:middle"></span> Ocupado</span>
+                    <span><span style="display:inline-block;width:14px;height:14px;background:var(--lu-off-white);border:1px solid var(--lu-gray-300);border-radius:3px;vertical-align:middle"></span> Libre (clic para seleccionar)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="battleship-board">
+                @for (int row = 0; row < 12; row++)
+                {
+                    <tr>
+                        @for (int col = 0; col < 12; col++)
+                        {
+                            var key = $"{row},{col}";
+                            var occupied = placedSet.Contains(key);
+                            if (occupied)
+                            {
+                                <td class="occupied" title="Celda ocupada">⚓</td>
+                            }
+                            else
+                            {
+                                var href = $"/Battleship/SelectDirection?gameId={Model.GameId}&shipSize={Model.ShipSize}&row={row}&col={col}";
+                                <td onclick="window.location.href='@href'" title="Fila @(row+1), Col @(col+1)">·</td>
+                            }
+                        }
+                    </tr>
+                }
+            </table>
+        </div>
+
+        <div class="mt-4">
+            <a asp-action="SelectShip" asp-route-gameId="@Model.GameId" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Volver a selección de barcos
+            </a>
+        </div>
+    </div>
+</div>

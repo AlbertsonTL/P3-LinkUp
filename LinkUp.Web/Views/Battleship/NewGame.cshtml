@@ -1,0 +1,46 @@
+@model LinkUp.Web.Models.SelectFriendForGameViewModel
+@{ ViewData["Title"] = "Nueva partida"; }
+
+<div class="row justify-content-center"><div class="col-md-7">
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-body p-4">
+            <h4 class="fw-bold mb-4"><i class="fas fa-ship me-2 text-primary"></i>Selecciona un amigo</h4>
+            <form asp-action="NewGame" method="get" class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="search" value="@Model.Search" class="form-control" placeholder="Buscar amigo..." />
+                    <button type="submit" class="btn btn-outline-primary"><i class="fas fa-search"></i></button>
+                </div>
+            </form>
+            <form asp-action="CreateGame" method="post">
+                @Html.AntiForgeryToken()
+                <div class="list-group mb-4">
+                    @foreach (var friend in Model.Friends)
+                    {
+                        <label class="list-group-item list-group-item-action d-flex align-items-center">
+                            <input type="radio" name="friendId" value="@friend.Id" class="me-3" required />
+                            @if (friend.ProfilePicture != null)
+                            {
+                                <img src="@friend.ProfilePicture" class="rounded-circle me-2" style="width:38px;height:38px;object-fit:cover" />
+                            }
+                            else
+                            {
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" style="width:38px;height:38px">
+                                    @friend.UserName.First().ToString().ToUpper()
+                                </div>
+                            }
+                            <span class="fw-semibold">@friend.UserName</span>
+                        </label>
+                    }
+                </div>
+                @if (!Model.Friends.Any())
+                {
+                    <p class="text-center text-muted py-3">No hay amigos disponibles para jugar.</p>
+                }
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-play me-2"></i>Iniciar partida</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Volver</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div></div>

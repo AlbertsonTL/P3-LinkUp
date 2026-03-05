@@ -1,0 +1,77 @@
+@model LinkUp.Web.Models.FriendsIndexViewModel
+@{
+    ViewData["Title"] = "Amigos";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row">
+    <!-- Friend Posts -->
+    <div class="col-lg-8">
+        <h4 class="fw-bold mb-4"><i class="fas fa-stream me-2 text-primary"></i>Publicaciones de amigos</h4>
+
+        @{
+            var postViewData = new ViewDataDictionary(ViewData);
+            postViewData["CurrentUserId"] = Model.CurrentUserId;
+            postViewData["ReturnTo"] = "Friends";
+        }
+
+        @if (Model.FriendPosts != null && Model.FriendPosts.Any())
+        {
+            @foreach (var post in Model.FriendPosts)
+            {
+                <partial name="~/Views/Shared/_PostCard.cshtml" model="post" view-data="postViewData" />
+            }
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="fas fa-stream fa-3x mb-3"></i>
+                <p>Tus amigos aún no tienen publicaciones o no tienes amigos agregados.</p>
+            </div>
+        }
+    </div>
+
+    <!-- Friends List Sidebar -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top:80px">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3"><i class="fas fa-users me-2 text-primary"></i>Mis amigos</h5>
+                @if (Model.Friends != null && Model.Friends.Any())
+                {
+                    @foreach (var friend in Model.Friends)
+                    {
+                        <div class="d-flex align-items-center gap-2 mb-3 p-2 rounded-3 bg-light">
+                            <img src="@(friend.ProfilePicture ?? "/images/default-avatar.png")"
+                                 class="rounded-circle" style="width:45px;height:45px;object-fit:cover" alt="foto" />
+                            <div class="flex-grow-1 overflow-hidden">
+                                <a asp-controller="Friends" asp-action="Publications" asp-route-friendId="@friend.Id"
+                                   class="fw-semibold text-decoration-none text-dark d-block text-truncate">
+                                    @friend.UserName
+                                </a>
+                                <small class="text-muted">@friend.FirstName @friend.LastName</small>
+                            </div>
+                            <a asp-controller="Friends" asp-action="ConfirmRemove" asp-route-friendId="@friend.Id"
+                               class="btn btn-sm btn-outline-danger" title="Eliminar amigo">
+                                <i class="fas fa-user-minus"></i>
+                            </a>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted small">No tienes amigos agregados aún.</p>
+                    <a asp-controller="FriendRequests" asp-action="NewRequest" class="btn btn-primary btn-sm">
+                        <i class="fas fa-user-plus me-1"></i>Agregar amigos
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

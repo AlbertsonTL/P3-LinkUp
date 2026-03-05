@@ -1,0 +1,42 @@
+@using System.Collections.Generic
+@model List<int[]>
+@{
+    ViewData["Title"] = "Mis barcos";
+    var placedSet = new HashSet<string>((Model ?? new List<int[]>()).Select(c => $"{c[0]},{c[1]}"));
+    int gameId = (int)(ViewBag.GameId ?? 0);
+    bool isResult = (bool)(ViewBag.IsResult ?? false);
+}
+
+<div class="row justify-content-center">
+    <div class="col-auto">
+        <div class="d-flex align-items-center mb-3">
+            @if (isResult)
+            {
+                <a asp-action="GameResult" asp-route-gameId="@gameId" class="btn btn-outline-secondary btn-sm me-3">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+            }
+            else
+            {
+                <a asp-action="AttackBoard" asp-route-gameId="@gameId" class="btn btn-outline-secondary btn-sm me-3">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+            }
+            <h4 class="fw-bold mb-0"><i class="fas fa-ship me-2 text-primary"></i>Mi tablero de posicionamiento</h4>
+        </div>
+        <table class="table table-bordered" style="border-collapse:collapse">
+            @for (int row = 0; row < 12; row++)
+            {
+                <tr>
+                    @for (int col = 0; col < 12; col++)
+                    {
+                        var occupied = placedSet.Contains($"{row},{col}");
+                        <td class="p-0 text-center @(occupied ? "bg-primary text-white" : "")" style="width:42px;height:42px">
+                            @if (occupied) { <span>🚢</span> }
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+</div>

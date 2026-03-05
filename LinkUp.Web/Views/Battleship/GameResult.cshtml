@@ -1,0 +1,88 @@
+@model LinkUp.Web.Models.GameResultViewModel
+@{
+    ViewData["Title"] = "Resultado de partida";
+    var myAttacks = Model.Result.MyAttacks.ToDictionary(c => $"{c.Row},{c.Col}", c => c.IsHit);
+    var currentUserId = Model.Result.RequestingUserId;
+    var won = Model.Result.WinnerId == currentUserId;
+}
+
+<div class="row justify-content-center">
+    <div class="col-auto">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold">
+                <i class="fas @(won ? "fa-trophy text-warning" : "fa-times-circle text-danger") me-2"></i>
+                @(won ? "¡Victoria!" : "Derrota")
+            </h4>
+            <div class="d-flex gap-2">
+                <a asp-action="OpponentBoard" asp-route-gameId="@Model.GameId" class="btn btn-outline-info btn-sm">
+                    <i class="fas fa-eye me-1"></i>Ver tablero del oponente
+                </a>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i>Volver
+                </a>
+            </div>
+        </div>
+
+        <h5 class="fw-semibold mb-3">Tu tablero de ataque vs @Model.Result.OpponentUserName:</h5>
+        <div class="mb-3">
+            <span class="badge bg-danger me-2">💥 Acertado</span>
+            <span class="badge bg-success me-2">💧 Fallado</span>
+        </div>
+
+        <table class="table table-bordered" style="border-collapse:collapse">
+            @for (int row = 0; row < 12; row++)
+            {
+                <tr>
+                    @for (int col = 0; col < 12; col++)
+                    {
+                        var key = $"{row},{col}";
+                        var wasAttacked = myAttacks.ContainsKey(key);
+                        var isHit = wasAttacked && myAttacks[key];
+                        var bg = wasAttacked ? (isHit ? "bg-danger" : "bg-success") : "";
+                        <td class="p-0 text-center @bg" style="width:38px;height:38px">
+                            @if (isHit) { <span>💥</span> }
+                            else if (wasAttacked) { <span>💧</span> }
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+
+        <!-- My ship placement button -->
+        <div class="mt-3">
+            <button class="btn btn-outline-primary btn-sm" onclick="toggleMyPlacement()">
+                <i class="fas fa-ship me-1"></i>Ver mi posicionamiento de barcos
+            </button>
+        </div>
+
+        <div id="myPlacementBoard" style="display:none" class="mt-3">
+            @{
+                var myShipSet = new HashSet<string>(Model.Result.MyShipPlacements.Select(c => $"{c[0]},{c[1]}"));
+            }
+            <h6 class="fw-semibold mb-2">Mi posicionamiento:</h6>
+            <table class="table table-bordered" style="border-collapse:collapse">
+                @for (int row = 0; row < 12; row++)
+                {
+                    <tr>
+                        @for (int col = 0; col < 12; col++)
+                        {
+                            var occupied = myShipSet.Contains($"{row},{col}");
+                            <td class="p-0 text-center @(occupied ? "bg-primary" : "")" style="width:38px;height:38px">
+                                @if (occupied) { <span>🚢</span> }
+                            </td>
+                        }
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function toggleMyPlacement() {
+    const el = document.getElementById('myPlacementBoard');
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+}

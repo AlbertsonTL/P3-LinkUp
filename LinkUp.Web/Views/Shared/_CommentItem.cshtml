@@ -1,0 +1,98 @@
+@model LinkUp.Application.DTOs.Response.CommentResponseDto
+@{
+    var postId = ViewData["PostId"] as int? ?? 0;
+    var currentUserId = ViewData["CurrentUserId"] as int? ?? 0;
+    var returnTo = ViewData["ReturnTo"] as string ?? "Index";
+    var isReply = Model.ParentCommentId.HasValue;
+}
+
+<div class="d-flex mt-2 @(isReply ? "ms-4" : "")">
+    @if (Model.UserProfilePicture != null)
+    {
+        <img src="@Model.UserProfilePicture" class="rounded-circle me-2 border flex-shrink-0"
+             style="width:32px;height:32px;object-fit:cover" alt="@Model.UserName" />
+    }
+    else
+    {
+        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2 flex-shrink-0 text-white"
+             style="width:32px;height:32px;font-size:12px">
+            @Model.UserName.First().ToString().ToUpper()
+        </div>
+    }
+    <div class="flex-grow-1">
+        <div class="bg-light rounded-3 px-3 py-2">
+            <span class="fw-semibold small">@Model.UserName</span>
+            <p class="mb-0 small">@Model.Content</p>
+        </div>
+        <div class="d-flex gap-2 mt-1 align-items-center flex-wrap">
+            <small class="text-muted">@Model.CreatedAt.ToString("dd/MM HH:mm")</small>
+            @if (!isReply)
+            {
+                <button class="btn btn-link btn-sm p-0 text-primary small" onclick="toggleReplyForm('@Model.Id')">
+                    <i class="fas fa-reply me-1"></i>Responder
+                </button>
+            }
+            @if (Model.UserId == currentUserId)
+            {
+                <a asp-controller="Posts" asp-action="EditComment"
+                   asp-route-commentId="@Model.Id" asp-route-returnTo="@returnTo"
+                   class="btn btn-link btn-sm p-0 text-secondary small">
+                    <i class="fas fa-edit me-1"></i>Editar
+                </a>
+                <form asp-controller="Posts" asp-action="DeleteComment" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="commentId" value="@Model.Id" />
+                    <input type="hidden" name="returnTo" value="@returnTo" />
+                    <button type="submit" class="btn btn-link btn-sm p-0 text-danger small"
+                            onclick="return confirm('¿Eliminar comentario?')">
+                        <i class="fas fa-trash me-1"></i>Eliminar
+                    </button>
+                </form>
+            }
+        </div>
+
+        @if (!isReply && Model.Replies != null && Model.Replies.Any())
+        {
+            <div id="reply-form-@Model.Id" style="display:none" class="mt-2">
+                <form asp-controller="Posts" asp-action="AddComment" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="PostId" value="@postId" />
+                    <input type="hidden" name="ParentCommentId" value="@Model.Id" />
+                    <input type="hidden" name="returnTo" value="@returnTo" />
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="Content" class="form-control" placeholder="Tu respuesta..." required />
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="fas fa-reply"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+                var replyViewData = new ViewDataDictionary(ViewData);
+                replyViewData[index: "PostId"] = postId;
+                replyViewData["CurrentUserId"] = currentUserId;
+                replyViewData["ReturnTo"] = returnTo;
+            @foreach (var reply in Model.Replies)
+            {
+                <partial name="_CommentItem" model="reply" view-data="replyViewData" />
+            }
+        }
+        else if (!isReply)
+        {
+            <div id="reply-form-@Model.Id" style="display:none" class="mt-2">
+                <form asp-controller="Posts" asp-action="AddComment" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="PostId" value="@postId" />
+                    <input type="hidden" name="ParentCommentId" value="@Model.Id" />
+                    <input type="hidden" name="returnTo" value="@returnTo" />
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="Content" class="form-control" placeholder="Tu respuesta..." required />
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="fas fa-reply"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        }
+    </div>
+</div>
