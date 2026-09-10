@@ -3,9 +3,14 @@
 
 <div class="row justify-content-center">
     <div class="col-md-7">
-        <div class="card shadow border-0 rounded-4">
-            <div class="card-body p-4">
-                <h4 class="fw-bold mb-4"><i class="fas fa-edit me-2 text-primary"></i>Editar publicación</h4>
+        <div class="card post-card">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                    <a asp-action="Index" class="btn-icon me-3" aria-label="Volver a mis publicaciones">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    <h4 class="fw-800 mb-0"><i class="fas fa-edit me-2 text-gold"></i>Editar publicación</h4>
+                </div>
                 <form asp-action="Edit" method="post" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
                     <input asp-for="Id" type="hidden" />
@@ -19,7 +24,7 @@
                     {
                         @if (Model.CurrentImagePath != null)
                         {
-                            <img src="@Model.CurrentImagePath" class="img-fluid rounded mb-2" style="max-height:200px" />
+                            <img src="@Model.CurrentImagePath" class="img-fluid rounded-xl mb-2" style="max-height:200px" alt="Imagen actual de la publicación" />
                         }
                         <div class="mb-3">
                             <label asp-for="ImageFile" class="form-label fw-semibold">Nueva imagen (opcional)</label>
@@ -35,7 +40,7 @@
                     }
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Guardar</button>
-                        <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                        <a asp-action="Index" class="btn btn-ghost">Cancelar</a>
                     </div>
                 </form>
             </div>

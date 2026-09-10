@@ -5,42 +5,41 @@
 
 <div class="row">
     <div class="col-lg-8 mx-auto">
-        <h4 class="fw-bold mb-4"><i class="fas fa-newspaper me-2 text-primary"></i>Mis Publicaciones</h4>
+        <div class="page-header">
+            <h4><i class="fas fa-newspaper"></i>Mis publicaciones</h4>
+        </div>
 
         @if (TempData["Success"] != null)
         {
-            <div class="alert alert-success alert-dismissible fade show">
-                @TempData["Success"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+            <span class="visually-hidden" data-lu-toast="success">@TempData["Success"]</span>
         }
         @if (TempData["Error"] != null)
         {
-            <div class="alert alert-danger alert-dismissible fade show">
-                @TempData["Error"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+            <span class="visually-hidden" data-lu-toast="danger">@TempData["Error"]</span>
         }
 
         <!-- Create Post Form -->
-        <div class="card shadow-sm border-0 rounded-4 mb-4">
-            <div class="card-body p-4">
-                <h6 class="fw-bold mb-3"><i class="fas fa-plus-circle me-2 text-primary"></i>Nueva publicación</h6>
+        <div class="card post-card mb-4">
+            <div class="card-body">
+                <h6 class="fw-800 mb-3 text-navy"><i class="fas fa-plus-circle me-2 text-gold"></i>¿Qué estás pensando?</h6>
                 <form asp-action="Create" method="post" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
                     <div class="mb-3">
-                        <textarea name="Content" class="form-control" rows="3" placeholder="¿Qué estás pensando?" required></textarea>
+                        <textarea name="Content" class="form-control" rows="3" placeholder="Comparte algo con tus amigos..." required></textarea>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label">Tipo de contenido</label>
                         <select name="MediaType" class="form-select" id="mediaTypeSelect" onchange="toggleMediaInput()">
                             <option value="image">Imagen</option>
                             <option value="video">Video de YouTube</option>
                         </select>
                     </div>
                     <div id="imageInput" class="mb-3">
+                        <label class="form-label">Imagen</label>
                         <input type="file" name="ImageFile" class="form-control" accept="image/*" />
                     </div>
                     <div id="videoInput" class="mb-3" style="display:none">
+                        <label class="form-label">Enlace de YouTube</label>
                         <input type="text" name="YouTubeUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=..." />
                     </div>
                     <button type="submit" class="btn btn-primary">
@@ -63,9 +62,10 @@
 
         @if (!Model.Posts.Any())
         {
-            <div class="text-center py-5 text-muted">
-                <i class="fas fa-newspaper fa-3x mb-3"></i>
-                <p>Aún no tienes publicaciones. ¡Crea la primera!</p>
+            <div class="empty-state">
+                <i class="fas fa-newspaper"></i>
+                <p class="fw-600">Aún no tienes publicaciones.</p>
+                <p class="mb-0">Usa el cuadro de arriba para compartir tu primer momento con tus amigos.</p>
             </div>
         }
     </div>
