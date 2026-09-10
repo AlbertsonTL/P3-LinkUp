@@ -1,54 +1,58 @@
 @model LinkUp.Web.Models.FriendRequestsIndexViewModel
 @{ ViewData["Title"] = "Solicitudes de amistad"; }
 
-<h4 class="fw-bold mb-4"><i class="fas fa-user-plus me-2 text-primary"></i>Solicitudes de amistad</h4>
+<div class="page-header">
+    <h4><i class="fas fa-user-plus"></i>Solicitudes de amistad</h4>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <span class="visually-hidden" data-lu-toast="success">@TempData["Success"]</span>
+}
 
 <div class="row">
     <!-- Solicitudes recibidas -->
     <div class="col-md-6">
-        <div class="card shadow-sm border-0 rounded-4 mb-4">
-            <div class="card-header bg-primary text-white rounded-top-4">
-                <h6 class="mb-0">
-                    <i class="fas fa-inbox me-2"></i>Solicitudes recibidas (@Model.PendingRequests.Count())
+        <div class="card post-card mb-4">
+            <div class="card-body">
+                <h6 class="fw-800 mb-3">
+                    <i class="fas fa-inbox me-2 text-navy"></i>Solicitudes recibidas (@Model.PendingRequests.Count())
                 </h6>
-            </div>
-            <div class="card-body p-0">
                 @foreach (var req in Model.PendingRequests)
                 {
-                    <div class="p-3 border-bottom">
-                        <div class="d-flex align-items-center mb-2">
-                            @if (req.SenderProfilePicture != null)
-                            {
-                                <img src="@req.SenderProfilePicture" class="rounded-circle me-2"
-                                     style="width:38px;height:38px;object-fit:cover" />
-                            }
-                            else
-                            {
-                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2"
-                                     style="width:38px;height:38px;font-size:13px">
-                                    @req.SenderUserName.First().ToString().ToUpper()
-                                </div>
-                            }
-                            <div>
-                                <span class="fw-semibold">@req.SenderUserName</span>
-                                <small class="text-muted d-block">
-                                    @req.CommonFriendsCount amigos en común &middot; @req.CreatedAt.ToString("dd/MM/yyyy")
-                                </small>
+                    <div class="friend-item align-items-start">
+                        @if (req.SenderProfilePicture != null)
+                        {
+                            <img src="@req.SenderProfilePicture" class="avatar" alt="@req.SenderUserName" />
+                        }
+                        else
+                        {
+                            <div class="avatar-placeholder" style="width:42px;height:42px">
+                                @req.SenderUserName.First().ToString().ToUpper()
                             </div>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <a asp-action="ConfirmAccept" asp-route-requestId="@req.Id" class="btn btn-sm btn-success">
-                                <i class="fas fa-check me-1"></i>Aceptar
-                            </a>
-                            <a asp-action="ConfirmReject" asp-route-requestId="@req.Id" class="btn btn-sm btn-outline-danger">
-                                <i class="fas fa-times me-1"></i>Rechazar
-                            </a>
+                        }
+                        <div class="flex-grow-1">
+                            <span class="friend-username d-block">@req.SenderUserName</span>
+                            <span class="friend-meta d-block mb-2">
+                                @req.CommonFriendsCount amigos en común &middot; @req.CreatedAt.ToString("dd/MM/yyyy")
+                            </span>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#acceptModal-@req.Id">
+                                    <i class="fas fa-check me-1"></i>Aceptar
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#rejectModal-@req.Id">
+                                    <i class="fas fa-times me-1"></i>Rechazar
+                                </button>
+                            </div>
                         </div>
                     </div>
                 }
                 @if (!Model.PendingRequests.Any())
                 {
-                    <p class="text-center text-muted py-4">No tienes solicitudes pendientes.</p>
+                    <div class="empty-state py-4">
+                        <i class="fas fa-inbox"></i>
+                        <p class="mb-0 small">No tienes solicitudes pendientes.</p>
+                    </div>
                 }
             </div>
         </div>
@@ -56,56 +60,142 @@
 
     <!-- Solicitudes enviadas -->
     <div class="col-md-6">
-        <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-header bg-secondary text-white rounded-top-4 d-flex justify-content-between align-items-center">
-                <h6 class="mb-0"><i class="fas fa-paper-plane me-2"></i>Solicitudes enviadas (@Model.SentRequests.Count())</h6>
-                <a asp-action="NewRequest" class="btn btn-sm btn-light">
-                    <i class="fas fa-plus me-1"></i>Nueva solicitud
-                </a>
-            </div>
-            <div class="card-body p-0">
+        <div class="card post-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-800 mb-0"><i class="fas fa-paper-plane me-2 text-navy"></i>Enviadas (@Model.SentRequests.Count())</h6>
+                    <a asp-action="NewRequest" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i>Nueva
+                    </a>
+                </div>
                 @foreach (var req in Model.SentRequests)
                 {
-                    <div class="p-3 border-bottom">
-                        <div class="d-flex align-items-center mb-2">
-                            @if (req.ReceiverProfilePicture != null)
-                            {
-                                <img src="@req.ReceiverProfilePicture" class="rounded-circle me-2"
-                                     style="width:38px;height:38px;object-fit:cover" />
-                            }
-                            else
-                            {
-                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2"
-                                     style="width:38px;height:38px;font-size:13px">
-                                    @req.ReceiverUserName.First().ToString().ToUpper()
-                                </div>
-                            }
-                            <div>
-                                <span class="fw-semibold">@req.ReceiverUserName</span>
-                                <small class="text-muted d-block">
-                                    @req.CommonFriendsCount amigos en común &middot; @req.CreatedAt.ToString("dd/MM/yyyy")
-                                </small>
-                                @{
-                                    var statusText = req.Status switch
-                                    {
-                                        LinkUp.Domain.Enums.FriendRequestStatus.Accepted => ("bg-success", "Aceptada"),
-                                        LinkUp.Domain.Enums.FriendRequestStatus.Rejected => ("bg-danger", "Rechazada"),
-                                        _ => ("bg-warning text-dark", "En espera de respuesta")
-                                    };
-                                }
-                                <span class="badge @statusText.Item1 mt-1">@statusText.Item2</span>
+                    <div class="friend-item align-items-start">
+                        @if (req.ReceiverProfilePicture != null)
+                        {
+                            <img src="@req.ReceiverProfilePicture" class="avatar" alt="@req.ReceiverUserName" />
+                        }
+                        else
+                        {
+                            <div class="avatar-placeholder" style="width:42px;height:42px">
+                                @req.ReceiverUserName.First().ToString().ToUpper()
                             </div>
+                        }
+                        <div class="flex-grow-1">
+                            <span class="friend-username d-block">@req.ReceiverUserName</span>
+                            <span class="friend-meta d-block">
+                                @req.CommonFriendsCount amigos en común &middot; @req.CreatedAt.ToString("dd/MM/yyyy")
+                            </span>
+                            @{
+                                var statusClass = req.Status switch
+                                {
+                                    LinkUp.Domain.Enums.FriendRequestStatus.Accepted => "badge-status-accepted",
+                                    LinkUp.Domain.Enums.FriendRequestStatus.Rejected => "badge-status-rejected",
+                                    _ => "badge-status-pending"
+                                };
+                                var statusText = req.Status switch
+                                {
+                                    LinkUp.Domain.Enums.FriendRequestStatus.Accepted => "Aceptada",
+                                    LinkUp.Domain.Enums.FriendRequestStatus.Rejected => "Rechazada",
+                                    _ => "En espera de respuesta"
+                                };
+                            }
+                            <span class="badge-status @statusClass my-2">@statusText</span>
+                            <button type="button" class="btn-icon btn-icon-sm btn-icon-danger ms-2" aria-label="Eliminar solicitud"
+                                    data-bs-toggle="modal" data-bs-target="#deleteModal-@req.Id">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
-                        <a asp-action="ConfirmDelete" asp-route-requestId="@req.Id" class="btn btn-sm btn-outline-danger">
-                            <i class="fas fa-trash me-1"></i>Eliminar
-                        </a>
                     </div>
                 }
                 @if (!Model.SentRequests.Any())
                 {
-                    <p class="text-center text-muted py-4">No has enviado solicitudes.</p>
+                    <div class="empty-state py-4">
+                        <i class="fas fa-paper-plane"></i>
+                        <p class="mb-0 small">No has enviado solicitudes.</p>
+                    </div>
                 }
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modals: Accept / Reject (received) -->
+@foreach (var req in Model.PendingRequests)
+{
+    <div class="modal fade" id="acceptModal-@req.Id" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user-check text-success"></i>¿Aceptar solicitud?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-0">
+                        ¿Aceptar la solicitud de amistad de <strong>@req.SenderUserName</strong>?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+                    <form asp-action="Accept" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="requestId" value="@req.Id" />
+                        <button type="submit" class="btn btn-success"><i class="fas fa-check me-2"></i>Aceptar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="rejectModal-@req.Id" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user-times text-danger"></i>¿Rechazar solicitud?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-0">
+                        ¿Rechazar la solicitud de amistad de <strong>@req.SenderUserName</strong>?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+                    <form asp-action="Reject" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="requestId" value="@req.Id" />
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-times me-2"></i>Rechazar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modals: Delete (sent) -->
+@foreach (var req in Model.SentRequests)
+{
+    <div class="modal fade" id="deleteModal-@req.Id" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-trash-alt text-warning"></i>¿Eliminar solicitud?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-0">
+                        ¿Eliminar la solicitud de amistad enviada a <strong>@req.ReceiverUserName</strong>?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+                    <form asp-action="DeleteRequest" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="requestId" value="@req.Id" />
+                        <button type="submit" class="btn btn-warning"><i class="fas fa-check me-2"></i>Eliminar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
