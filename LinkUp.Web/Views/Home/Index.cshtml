@@ -3,18 +3,44 @@
     Layout = "_Layout";
 }
 
-<div class="min-vh-100 d-flex align-items-center" style="background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);">
-    <div class="container text-center text-white">
-        <i class="fas fa-link fa-5x mb-4"></i>
-        <h1 class="fw-bold display-4">LinkUp</h1>
-        <p class="lead mb-4">Conecta con tus amigos, comparte momentos y juega Battleship.</p>
-        <div class="d-flex gap-3 justify-content-center">
-            <a asp-controller="Account" asp-action="Login" class="btn btn-light btn-lg px-4">
+<div class="lu-hero">
+    <div class="container text-center text-white py-5">
+        <div class="lu-hero-logo mb-4">
+            <img src="/favicon.ico" alt="LinkUp" />
+        </div>
+        <h1 class="fw-800 display-5 mb-3">LinkUp</h1>
+        <p class="lead mb-5 lu-hero-subtitle">
+            Conecta con tus amigos, comparte momentos y juega Battleship.
+        </p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap mb-5">
+            <a asp-controller="Account" asp-action="Login" class="btn btn-gold btn-lg px-4">
                 <i class="fas fa-sign-in-alt me-2"></i>Iniciar sesión
             </a>
             <a asp-controller="Account" asp-action="Register" class="btn btn-outline-light btn-lg px-4">
                 <i class="fas fa-user-plus me-2"></i>Registrarse
             </a>
         </div>
+
+        <div class="row g-3 justify-content-center lu-hero-features">
+            <div class="col-6 col-md-3">
+                <div class="lu-hero-feature">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Comparte</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="lu-hero-feature">
+                    <i class="fas fa-users"></i>
+                    <span>Conecta</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="lu-hero-feature">
+                    <i class="fas fa-ship"></i>
+                    <span>Juega</span>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
