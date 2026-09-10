@@ -1,0 +1,38 @@
+@* Mobile bottom navigation. Mirrors the desktop navbar links so functionality
+   stays identical — this is purely an additional, small-screen entry point.
+   Hidden above 768px via CSS (see .bottom-nav in site.css). *@
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+}
+<nav class="bottom-nav" aria-label="Navegación principal (móvil)">
+    <a class="bottom-nav-item @(controller == "Posts" ? "active" : "")" href="/Posts"
+       aria-current="@(controller == "Posts" ? "page" : null)">
+        <i class="fas fa-home"></i>
+        <span>Inicio</span>
+    </a>
+    <a class="bottom-nav-item @(controller == "Friends" ? "active" : "")" href="/Friends"
+       aria-current="@(controller == "Friends" ? "page" : null)">
+        <i class="fas fa-users"></i>
+        <span>Amigos</span>
+    </a>
+    <a class="bottom-nav-item position-relative @(controller == "FriendRequests" ? "active" : "")" href="/FriendRequests"
+       aria-current="@(controller == "FriendRequests" ? "page" : null)">
+        <i class="fas fa-user-plus"></i>
+        @if (ViewBag.PendingRequestsCount != null && (int)ViewBag.PendingRequestsCount > 0)
+        {
+            <span class="bottom-nav-badge">@ViewBag.PendingRequestsCount</span>
+        }
+        <span>Solicitudes</span>
+    </a>
+    <a class="bottom-nav-item @(controller == "Battleship" ? "active" : "")" href="/Battleship"
+       aria-current="@(controller == "Battleship" ? "page" : null)">
+        <i class="fas fa-ship"></i>
+        <span>Battleship</span>
+    </a>
+    <a class="bottom-nav-item @(controller == "Account" && action == "Profile" ? "active" : "")" href="/Account/Profile"
+       aria-current="@(controller == "Account" && action == "Profile" ? "page" : null)">
+        <i class="fas fa-user-circle"></i>
+        <span>Perfil</span>
+    </a>
+</nav>

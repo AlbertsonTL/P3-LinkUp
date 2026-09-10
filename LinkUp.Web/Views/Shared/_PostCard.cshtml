@@ -12,33 +12,34 @@
     }
 }
 
-<div class="card shadow-sm border-0 rounded-4 mb-4">
-    <div class="card-body p-4">
+<div class="card post-card mb-4 fade-in-up">
+    <div class="card-body">
         <div class="d-flex align-items-center mb-3">
             @if (Model.UserProfilePicture != null)
             {
-                <img src="@Model.UserProfilePicture" class="rounded-circle me-2 border" style="width:40px;height:40px;object-fit:cover" alt="@Model.UserName" />
+                <img src="@Model.UserProfilePicture" class="avatar me-2" alt="@Model.UserName" />
             }
             else
             {
-                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-2 text-white fw-bold" style="width:40px;height:40px;">
+                <div class="avatar-placeholder me-2" style="width:42px;height:42px">
                     @Model.UserName.First().ToString().ToUpper()
                 </div>
             }
             <div>
-                <a href="/Friends/Publications/@Model.UserId" class="fw-bold text-dark text-decoration-none">@Model.UserName</a>
-                <small class="text-muted d-block">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                <a href="/Friends/Publications/@Model.UserId" class="post-author-name text-decoration-none d-block">@Model.UserName</a>
+                <span class="post-timestamp">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
             </div>
             @if (Model.UserId == currentUserId)
             {
-                <div class="ms-auto">
-                    <a asp-controller="Posts" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary me-1">
+                <div class="ms-auto d-flex gap-2">
+                    <a asp-controller="Posts" asp-action="Edit" asp-route-id="@Model.Id" class="btn-icon btn-icon-sm" aria-label="Editar publicación">
                         <i class="fas fa-edit"></i>
                     </a>
                     <form asp-controller="Posts" asp-action="Delete" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="id" value="@Model.Id" />
-                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar publicación?')">
+                        <button type="submit" class="btn-icon btn-icon-sm btn-icon-danger" aria-label="Eliminar publicación"
+                                onclick="return confirm('¿Eliminar publicación?')">
                             <i class="fas fa-trash"></i>
                         </button>
                     </form>
@@ -50,12 +51,12 @@
 
         @if (Model.MediaType == LinkUp.Domain.Enums.PostMediaType.Image && Model.ImagePath != null)
         {
-            <img src="@Model.ImagePath" class="img-fluid rounded-3 mb-3" style="max-height:400px;width:100%;object-fit:cover" alt="Post image" />
+            <img src="@Model.ImagePath" class="img-fluid rounded-xl mb-3" style="max-height:400px;width:100%;object-fit:cover" alt="Imagen de la publicación" />
         }
         @if (Model.MediaType == LinkUp.Domain.Enums.PostMediaType.Video && Model.YouTubeUrl != null)
         {
-            <div class="ratio ratio-16x9 mb-3">
-                <iframe src="@GetYouTubeEmbed(Model.YouTubeUrl)" allowfullscreen class="rounded-3"></iframe>
+            <div class="ratio ratio-16x9 mb-3 yt-embed">
+                <iframe src="@GetYouTubeEmbed(Model.YouTubeUrl)" allowfullscreen title="Video de la publicación"></iframe>
             </div>
         }
 
@@ -67,14 +68,14 @@
                     <input type="hidden" name="postId" value="@Model.Id" />
                     <input type="hidden" name="isLike" value="true" />
                     <input type="hidden" name="returnTo" value="@returnTo" />
-                    <button type="submit" class="btn btn-sm btn-outline-primary">
-                        <i class="fas fa-thumbs-up me-1"></i>Me gusta (@Model.LikeCount)
+                    <button type="submit" class="btn reaction-btn reaction-like">
+                        <i class="fas fa-thumbs-up"></i>Me gusta (@Model.LikeCount)
                     </button>
                 </form>
             }
             else
             {
-                <span class="btn btn-sm btn-primary disabled"><i class="fas fa-thumbs-up me-1"></i>Me gusta (@Model.LikeCount)</span>
+                <span class="btn reaction-btn reaction-like active"><i class="fas fa-thumbs-up"></i>Me gusta (@Model.LikeCount)</span>
             }
 
             @if (Model.CurrentUserReaction == null || Model.CurrentUserReaction == LinkUp.Domain.Enums.ReactionType.Like)
@@ -84,14 +85,14 @@
                     <input type="hidden" name="postId" value="@Model.Id" />
                     <input type="hidden" name="isLike" value="false" />
                     <input type="hidden" name="returnTo" value="@returnTo" />
-                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                        <i class="fas fa-thumbs-down me-1"></i>No me gusta (@Model.DislikeCount)
+                    <button type="submit" class="btn reaction-btn reaction-dislike">
+                        <i class="fas fa-thumbs-down"></i>No me gusta (@Model.DislikeCount)
                     </button>
                 </form>
             }
             else
             {
-                <span class="btn btn-sm btn-danger disabled"><i class="fas fa-thumbs-down me-1"></i>No me gusta (@Model.DislikeCount)</span>
+                <span class="btn reaction-btn reaction-dislike active"><i class="fas fa-thumbs-down"></i>No me gusta (@Model.DislikeCount)</span>
             }
         </div>
 
@@ -102,10 +103,15 @@
                 commentViewData["PostId"] = Model.Id;
                 commentViewData["CurrentUserId"] = currentUserId;
                 commentViewData["ReturnTo"] = returnTo;
+                var topLevelComments = Model.Comments.Where(c => c.ParentCommentId == null).ToList();
             }
-            @foreach (var comment in Model.Comments.Where(c => c.ParentCommentId == null))
+            @if (topLevelComments.Any())
             {
-                <partial name="_CommentItem" model="comment" view-data="commentViewData" />
+                <div class="section-divider">Comentarios</div>
+                @foreach (var comment in topLevelComments)
+                {
+                    <partial name="_CommentItem" model="comment" view-data="commentViewData" />
+                }
             }
         </div>
 
@@ -116,7 +122,7 @@
             <input type="hidden" name="returnTo" value="@returnTo" />
             <div class="input-group">
                 <input type="text" name="Content" class="form-control" placeholder="Agrega un comentario..." required />
-                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+                <button type="submit" class="btn btn-primary" aria-label="Enviar comentario"><i class="fas fa-paper-plane"></i></button>
             </div>
         </form>
     </div>
