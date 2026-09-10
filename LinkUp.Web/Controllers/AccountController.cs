@@ -14,16 +14,22 @@ public class AccountController : Controller
     private readonly SignInManager<AppUser> _signInManager;
     private readonly UserManager<AppUser> _userManager;
     private readonly IFileStorageService _fileStorage;
+    private readonly IFriendService _friendService;
+    private readonly IPostService _postService;
 
     public AccountController(IAccountService accountService,
         SignInManager<AppUser> signInManager,
         UserManager<AppUser> userManager,
-        IFileStorageService fileStorage)
+        IFileStorageService fileStorage,
+        IFriendService friendService,
+        IPostService postService)
     {
         _accountService = accountService;
         _signInManager = signInManager;
         _userManager = userManager;
         _fileStorage = fileStorage;
+        _friendService = friendService;
+        _postService = postService;
     }
 
     [HttpGet]
@@ -184,12 +190,19 @@ public class AccountController : Controller
         var user = await _accountService.GetUserByIdAsync(userId);
         if (user == null) return NotFound();
 
+        var friends = await _friendService.GetFriendsAsync(userId);
+        var posts = await _postService.GetUserPostsAsync(userId, userId);
+
         return View(new ProfileViewModel
         {
             FirstName = user.FirstName,
             LastName = user.LastName,
             Phone = user.Phone,
-            CurrentProfilePicture = user.ProfilePicture
+            CurrentProfilePicture = user.ProfilePicture,
+            UserId = userId,
+            UserName = user.UserName,
+            FriendsCount = friends.Count(),
+            Posts = posts.ToList()
         });
     }
 
@@ -198,11 +211,31 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Profile(ProfileViewModel model)
     {
-        if (!ModelState.IsValid) return View(model);
+        var userId = int.Parse(_userManager.GetUserId(User)!);
+
+        async Task RehydrateDisplayDataAsync()
+        {
+            var currentUser = await _accountService.GetUserByIdAsync(userId);
+            var friends = await _friendService.GetFriendsAsync(userId);
+            var posts = await _postService.GetUserPostsAsync(userId, userId);
+
+            model.UserId = userId;
+            model.UserName = currentUser?.UserName ?? string.Empty;
+            model.CurrentProfilePicture ??= currentUser?.ProfilePicture;
+            model.FriendsCount = friends.Count();
+            model.Posts = posts.ToList();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            await RehydrateDisplayDataAsync();
+            return View(model);
+        }
 
         if (!string.IsNullOrWhiteSpace(model.Password) && model.Password != model.ConfirmPassword)
         {
             ModelState.AddModelError("ConfirmPassword", "Las contraseñas no coinciden.");
+            await RehydrateDisplayDataAsync();
             return View(model);
         }
 
@@ -216,7 +249,6 @@ public class AccountController : Controller
             picName = model.ProfilePicture.FileName;
         }
 
-        var userId = int.Parse(_userManager.GetUserId(User)!);
         var result = await _accountService.UpdateProfileAsync(userId, new UpdateProfileRequestDto
         {
             FirstName = model.FirstName,
@@ -230,6 +262,7 @@ public class AccountController : Controller
         if (!result.IsSuccess)
         {
             ModelState.AddModelError("", result.Error!);
+            await RehydrateDisplayDataAsync();
             return View(model);
         }
 
