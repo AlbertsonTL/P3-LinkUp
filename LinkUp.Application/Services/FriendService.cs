@@ -1,4 +1,4 @@
-using AutoMapper;
+using LinkUp.Application.Mappings;
 using LinkUp.Application.Abstractions.Repositories;
 using LinkUp.Application.Abstractions.Services;
 using LinkUp.Application.DTOs.Response;
@@ -15,16 +15,14 @@ public class FriendService : IFriendService
     private readonly IPostRepository _postRepo;
     private readonly IPostReactionRepository _reactionRepo;
     private readonly UserManager<AppUser> _userManager;
-    private readonly IMapper _mapper;
 
     public FriendService(IFriendshipRepository friendshipRepo, IPostRepository postRepo,
-        IPostReactionRepository reactionRepo, UserManager<AppUser> userManager, IMapper mapper)
+        IPostReactionRepository reactionRepo, UserManager<AppUser> userManager)
     {
         _friendshipRepo = friendshipRepo;
         _postRepo = postRepo;
         _reactionRepo = reactionRepo;
         _userManager = userManager;
-        _mapper = mapper;
     }
 
     public async Task<IEnumerable<FriendResponseDto>> GetFriendsAsync(int userId)
@@ -38,7 +36,7 @@ public class FriendService : IFriendService
             var friend = await _userManager.FindByIdAsync(friendId.ToString());
             if (friend == null) continue;
 
-            var dto = _mapper.Map<FriendResponseDto>(friend);
+            var dto = friend.ToFriendResponseDto();
             dto.CommonFriendsCount = await _friendshipRepo.GetCommonFriendsCountAsync(userId, friendId);
             result.Add(dto);
         }
@@ -71,7 +69,7 @@ public class FriendService : IFriendService
 
         foreach (var post in posts.OrderByDescending(p => p.CreatedAt))
         {
-            var dto = _mapper.Map<PostResponseDto>(post);
+            var dto = post.ToPostResponseDto();
             var reaction = await _reactionRepo.GetUserReactionAsync(post.Id, userId);
             dto.CurrentUserReaction = reaction?.ReactionType;
             result.Add(dto);
@@ -86,7 +84,7 @@ public class FriendService : IFriendService
         var result = new List<PostResponseDto>();
         foreach (var post in posts.OrderByDescending(p => p.CreatedAt))
         {
-            var dto = _mapper.Map<PostResponseDto>(post);
+            var dto = post.ToPostResponseDto();
             var reaction = await _reactionRepo.GetUserReactionAsync(post.Id, userId);
             dto.CurrentUserReaction = reaction?.ReactionType;
             result.Add(dto);

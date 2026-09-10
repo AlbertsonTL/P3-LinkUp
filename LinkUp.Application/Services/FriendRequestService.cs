@@ -1,4 +1,4 @@
-using AutoMapper;
+using LinkUp.Application.Mappings;
 using LinkUp.Application.Abstractions.Repositories;
 using LinkUp.Application.Abstractions.Services;
 using LinkUp.Application.DTOs.Response;
@@ -15,15 +15,13 @@ public class FriendRequestService : IFriendRequestService
     private readonly IFriendRequestRepository _requestRepo;
     private readonly IFriendshipRepository _friendshipRepo;
     private readonly UserManager<AppUser> _userManager;
-    private readonly IMapper _mapper;
 
     public FriendRequestService(IFriendRequestRepository requestRepo, IFriendshipRepository friendshipRepo,
-        UserManager<AppUser> userManager, IMapper mapper)
+        UserManager<AppUser> userManager)
     {
         _requestRepo = requestRepo;
         _friendshipRepo = friendshipRepo;
         _userManager = userManager;
-        _mapper = mapper;
     }
 
     public async Task<IEnumerable<FriendRequestResponseDto>> GetPendingRequestsAsync(int userId)
@@ -32,7 +30,7 @@ public class FriendRequestService : IFriendRequestService
         var result = new List<FriendRequestResponseDto>();
         foreach (var req in requests)
         {
-            var dto = _mapper.Map<FriendRequestResponseDto>(req);
+            var dto = req.ToFriendRequestResponseDto();
             dto.CommonFriendsCount = await _friendshipRepo.GetCommonFriendsCountAsync(userId, req.SenderId);
             result.Add(dto);
         }
@@ -45,7 +43,7 @@ public class FriendRequestService : IFriendRequestService
         var result = new List<FriendRequestResponseDto>();
         foreach (var req in requests)
         {
-            var dto = _mapper.Map<FriendRequestResponseDto>(req);
+            var dto = req.ToFriendRequestResponseDto();
             dto.CommonFriendsCount = await _friendshipRepo.GetCommonFriendsCountAsync(userId, req.ReceiverId);
             result.Add(dto);
         }
@@ -69,7 +67,7 @@ public class FriendRequestService : IFriendRequestService
         var result = new List<UserResponseDto>();
         foreach (var user in allUsers.Take(50).ToList())
         {
-            var dto = _mapper.Map<UserResponseDto>(user);
+            var dto = user.ToUserResponseDto();
             dto.CommonFriendsCount = await _friendshipRepo.GetCommonFriendsCountAsync(userId, user.Id);
             result.Add(dto);
         }

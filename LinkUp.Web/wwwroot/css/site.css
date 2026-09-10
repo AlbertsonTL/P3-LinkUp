@@ -23,6 +23,8 @@ Turquesa (#0080A0), Blanco, Gris suave */
     --lu-shadow: 0 4px 20px rgba(0, 32, 96, .10);
     --lu-shadow-md: 0 8px 30px rgba(0, 32, 96, .16);
     --lu-transition: .2s ease;
+    --lu-background-overlay: rgba(240, 242, 245, .85);
+    --lu-auth-overlay: rgba(0, 0, 0, .452);
 
     /* Semantic aliases (Design System v2) — mapped to the palette above.
        New/rewritten views should prefer these; existing --lu-* names are kept
@@ -55,11 +57,9 @@ Turquesa (#0080A0), Blanco, Gris suave */
     --lu-space-6: 2rem;
 }
 
-/* Dark mode groundwork — opt-in via <html data-theme="dark">.
-   Not activated in the UI yet (no toggle wired); kept ready for a later phase. */
+/* Theme values are switched by the toggle in _Layout and persisted client-side. */
 [data-theme="dark"] {
     --lu-off-white: #0F1523;
-    --lu-white: #171E2E;
     --lu-gray-100: #1E2740;
     --lu-gray-300: #2E3A5C;
     --lu-gray-500: #8894AC;
@@ -69,6 +69,8 @@ Turquesa (#0080A0), Blanco, Gris suave */
     --lu-surface: var(--lu-white);
     --lu-surface-alt: var(--lu-gray-100);
     --lu-border: var(--lu-gray-100);
+    --lu-background-overlay: rgba(8, 12, 22, .78);
+    --lu-auth-overlay: rgba(4, 8, 18, .68);
     --lu-shadow: 0 4px 20px rgba(0, 0, 0, .35);
     --lu-shadow-md: 0 8px 30px rgba(0, 0, 0, .45);
 }
@@ -86,7 +88,8 @@ html {
 
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background-image: linear-gradient(rgba(240, 242, 245, 0.85), rgba(240, 242, 245, 0.85)),
+    background-color: var(--lu-background);
+    background-image: linear-gradient(var(--lu-background-overlay), var(--lu-background-overlay)),
         url('../img/background.jpg');
     background-size: cover;
     background-position: center;
@@ -96,6 +99,7 @@ body {
     font-size: 15px;
     line-height: 1.6;
     margin: 0;
+    transition: background-color var(--lu-transition), color var(--lu-transition);
 }
 
 a {
@@ -261,6 +265,12 @@ h6,
     background: rgba(255, 255, 255, .20);
     border-color: rgba(255, 255, 255, .5);
     color: var(--lu-white);
+}
+
+.navbar .theme-toggle {
+    flex-shrink: 0;
+    float: right;
+    margin-right: 10px;
 }
 
 /* CARDS */
@@ -431,6 +441,12 @@ h6,
     padding: .5rem .85rem;
     background-color: var(--lu-white);
     transition: border-color var(--lu-transition), box-shadow var(--lu-transition);
+}
+
+.input-group-text {
+    background-color: var(--lu-gray-100);
+    border-color: var(--lu-gray-300);
+    color: var(--lu-text-secondary);
 }
 
 .form-control::placeholder {
@@ -872,7 +888,7 @@ h6,
 
 .page-header h4 {
     font-weight: 800;
-    color: var(--lu-navy);
+    color: var(--lu-text);
     letter-spacing: -.3px;
     font-size: 1.25rem;
     margin: 0;
@@ -978,7 +994,7 @@ h6,
 /* LOGIN / REGISTER PAGE */
 .auth-page {
     min-height: 100vh;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.452), rgba(0, 0, 0, 0.452)),
+    background-image: linear-gradient(var(--lu-auth-overlay), var(--lu-auth-overlay)),
         url('../img/background.jpg');
     background-size: cover;
     background-position: center;

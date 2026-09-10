@@ -1,4 +1,4 @@
-using AutoMapper;
+using LinkUp.Application.Mappings;
 using LinkUp.Application.Abstractions.Repositories;
 using LinkUp.Application.Abstractions.Services;
 using LinkUp.Application.DTOs.Response;
@@ -11,12 +11,10 @@ namespace LinkUp.Application.Services;
 public class CommentService : ICommentService
 {
     private readonly ICommentRepository _commentRepo;
-    private readonly IMapper _mapper;
 
-    public CommentService(ICommentRepository commentRepo, IMapper mapper)
+    public CommentService(ICommentRepository commentRepo)
     {
         _commentRepo = commentRepo;
-        _mapper = mapper;
     }
 
     public async Task<Result<CommentResponseDto>> AddCommentAsync(int postId, int userId, string content, int? parentCommentId)
@@ -33,7 +31,7 @@ public class CommentService : ICommentService
 
         // Reload with user info
         var loaded = await _commentRepo.FirstOrDefaultAsync(c => c.Id == comment.Id);
-        return Result<CommentResponseDto>.Success(_mapper.Map<CommentResponseDto>(loaded!));
+        return Result<CommentResponseDto>.Success(loaded!.ToCommentResponseDto());
     }
 
     public async Task<R> UpdateCommentAsync(int commentId, int userId, string content)

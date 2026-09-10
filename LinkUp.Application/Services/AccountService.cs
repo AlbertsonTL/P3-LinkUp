@@ -1,4 +1,4 @@
-using AutoMapper;
+using LinkUp.Application.Mappings;
 using LinkUp.Application.Abstractions.Services;
 using LinkUp.Application.DTOs.Request;
 using LinkUp.Application.DTOs.Response;
@@ -13,15 +13,13 @@ namespace LinkUp.Application.Services;
 public class AccountService : IAccountService
 {
     private readonly UserManager<AppUser> _userManager;
-    private readonly IMapper _mapper;
     private readonly IEmailSender _emailSender;
     private readonly IFileStorageService _fileStorage;
 
-    public AccountService(UserManager<AppUser> userManager, IMapper mapper,
+    public AccountService(UserManager<AppUser> userManager,
         IEmailSender emailSender, IFileStorageService fileStorage)
     {
         _userManager = userManager;
-        _mapper = mapper;
         _emailSender = emailSender;
         _fileStorage = fileStorage;
     }
@@ -75,7 +73,7 @@ public class AccountService : IAccountService
         if (!valid)
             return Result<UserResponseDto>.Failure("Usuario o contraseña incorrectos.");
 
-        return Result<UserResponseDto>.Success(_mapper.Map<UserResponseDto>(user));
+        return Result<UserResponseDto>.Success(user.ToUserResponseDto());
     }
 
     public async Task<R> ActivateAccountAsync(string token)
@@ -164,6 +162,6 @@ public class AccountService : IAccountService
     public async Task<UserResponseDto?> GetUserByIdAsync(int userId)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
-        return user == null ? null : _mapper.Map<UserResponseDto>(user);
+        return user == null ? null : user.ToUserResponseDto();
     }
 }
