@@ -5,16 +5,15 @@
 
 @if (TempData["Success"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show">
-        @TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+    <span class="visually-hidden" data-lu-toast="success">@TempData["Success"]</span>
 }
 
 <div class="row">
     <!-- Friend Posts -->
     <div class="col-lg-8">
-        <h4 class="fw-bold mb-4"><i class="fas fa-stream me-2 text-primary"></i>Publicaciones de amigos</h4>
+        <div class="page-header">
+            <h4><i class="fas fa-stream"></i>Publicaciones de amigos</h4>
+        </div>
 
         @{
             var postViewData = new ViewDataDictionary(ViewData);
@@ -31,45 +30,98 @@
         }
         else
         {
-            <div class="text-center py-5 text-muted">
-                <i class="fas fa-stream fa-3x mb-3"></i>
-                <p>Tus amigos aún no tienen publicaciones o no tienes amigos agregados.</p>
+            <div class="empty-state">
+                <i class="fas fa-stream"></i>
+                <p class="fw-600">Sin novedades por aquí todavía.</p>
+                <p class="mb-0">Cuando tus amigos publiquen algo, lo verás en este espacio.</p>
             </div>
         }
     </div>
 
     <!-- Friends List Sidebar -->
     <div class="col-lg-4">
-        <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top:80px">
+        <div class="card post-card sticky-top" style="top:85px">
             <div class="card-body">
-                <h5 class="fw-bold mb-3"><i class="fas fa-users me-2 text-primary"></i>Mis amigos</h5>
+                <h6 class="fw-800 mb-3"><i class="fas fa-users me-2 text-navy"></i>Mis amigos (@(Model.Friends?.Count() ?? 0))</h6>
                 @if (Model.Friends != null && Model.Friends.Any())
                 {
                     @foreach (var friend in Model.Friends)
                     {
-                        <div class="d-flex align-items-center gap-2 mb-3 p-2 rounded-3 bg-light">
-                            <img src="@(friend.ProfilePicture ?? "/images/default-avatar.png")"
-                                 class="rounded-circle" style="width:45px;height:45px;object-fit:cover" alt="foto" />
+                        <div class="friend-item">
+                            @if (friend.ProfilePicture != null)
+                            {
+                                <img src="@friend.ProfilePicture" class="avatar" alt="@friend.UserName" />
+                            }
+                            else
+                            {
+                                <div class="avatar-placeholder" style="width:42px;height:42px">
+                                    @friend.UserName.First().ToString().ToUpper()
+                                </div>
+                            }
                             <div class="flex-grow-1 overflow-hidden">
                                 <a asp-controller="Friends" asp-action="Publications" asp-route-friendId="@friend.Id"
-                                   class="fw-semibold text-decoration-none text-dark d-block text-truncate">
+                                   class="friend-username text-decoration-none d-block text-truncate">
                                     @friend.UserName
                                 </a>
-                                <small class="text-muted">@friend.FirstName @friend.LastName</small>
+                                <span class="friend-meta">@friend.FirstName @friend.LastName</span>
                             </div>
-                            <a asp-controller="Friends" asp-action="ConfirmRemove" asp-route-friendId="@friend.Id"
-                               class="btn btn-sm btn-outline-danger" title="Eliminar amigo">
+                            <button type="button" class="btn-icon btn-icon-sm btn-icon-danger" aria-label="Eliminar a @friend.UserName de mis amigos"
+                                    data-bs-toggle="modal" data-bs-target="#removeFriendModal-@friend.Id">
                                 <i class="fas fa-user-minus"></i>
-                            </a>
+                            </button>
+                        </div>
+                    }
+
+                    @foreach (var friend in Model.Friends)
+                    {
+                        <div class="modal fade" id="removeFriendModal-@friend.Id" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title"><i class="fas fa-user-minus text-danger"></i>¿Eliminar amigo?</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="d-flex align-items-center gap-3 mb-3">
+                                            @if (friend.ProfilePicture != null)
+                                            {
+                                                <img src="@friend.ProfilePicture" class="avatar" alt="@friend.UserName" />
+                                            }
+                                            else
+                                            {
+                                                <div class="avatar-placeholder" style="width:42px;height:42px">@friend.UserName.First().ToString().ToUpper()</div>
+                                            }
+                                            <span class="fw-700">@friend.UserName</span>
+                                        </div>
+                                        <p class="text-muted mb-0">
+                                            ¿Seguro que deseas eliminar a <strong>@friend.UserName</strong> de tu lista de amigos?
+                                            Sus publicaciones ya no aparecerán en tu feed.
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+                                        <form asp-controller="Friends" asp-action="Remove" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="friendId" value="@friend.Id" />
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="fas fa-check me-2"></i>Sí, eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     }
                 }
                 else
                 {
-                    <p class="text-muted small">No tienes amigos agregados aún.</p>
-                    <a asp-controller="FriendRequests" asp-action="NewRequest" class="btn btn-primary btn-sm">
-                        <i class="fas fa-user-plus me-1"></i>Agregar amigos
-                    </a>
+                    <div class="empty-state py-4">
+                        <i class="fas fa-user-friends"></i>
+                        <p class="small mb-2">No tienes amigos agregados aún.</p>
+                        <a asp-controller="FriendRequests" asp-action="NewRequest" class="btn btn-primary btn-sm">
+                            <i class="fas fa-user-plus me-1"></i>Agregar amigos
+                        </a>
+                    </div>
                 }
             </div>
         </div>
