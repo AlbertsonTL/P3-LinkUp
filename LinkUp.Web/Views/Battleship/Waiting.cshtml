@@ -20,6 +20,7 @@
             <i class="fas fa-ship me-2 text-gold"></i>Tu posicionamiento actual:
         </h5>
 
+        <p class="d-md-none text-center text-muted small mb-2"><i class="fas fa-arrows-alt-h me-1"></i>Desliza para ver todo el tablero</p>
         <div class="table-responsive">
             <table class="battleship-board">
                 @for (int row = 0; row < 12; row++)
@@ -50,10 +51,36 @@
 
 @section Scripts {
 <script>
-// Auto-refresh cada 5 segundos: recarga la página que verifica si el oponente ya está listo
-// Si está listo, el servidor redirige automáticamente a AttackBoard
-setTimeout(function() {
-    window.location.href = '/Battleship/EnterGame?gameId=@Model.GameId';
-}, 5000);
+// ---------------------------------------------------------------
+// No se creó ningún endpoint nuevo: se sigue consultando exactamente
+// /Battleship/EnterGame?gameId=... (la misma URL que antes). La única
+// diferencia es que ahora, si el oponente TODAVÍA no está listo, no se
+// recarga la página completa — solo se vuelve a preguntar en 5s.
+// Si algo falla, se recurre al comportamiento original (navegación completa).
+// ---------------------------------------------------------------
+var gameId = @Model.GameId;
+var enterGameUrl = '/Battleship/EnterGame?gameId=' + gameId;
+
+function checkOpponentReady() {
+    if (!window.fetch) {
+        window.location.href = enterGameUrl;
+        return;
+    }
+    fetch(enterGameUrl, { credentials: 'same-origin' })
+        .then(function (response) {
+            if (response.url && response.url.indexOf('/Battleship/Waiting') === -1) {
+                // State changed (opponent ready, or game finished by surrender) — navigate for real.
+                window.location.href = response.url;
+            } else {
+                setTimeout(checkOpponentReady, 5000);
+            }
+        })
+        .catch(function () {
+            // Defensive fallback: same behavior as before this change.
+            window.location.href = enterGameUrl;
+        });
+}
+
+setTimeout(checkOpponentReady, 5000);
 </script>
 }

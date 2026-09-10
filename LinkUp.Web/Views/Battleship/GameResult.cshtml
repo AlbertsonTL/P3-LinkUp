@@ -4,17 +4,20 @@
     var myAttacks = Model.Result.MyAttacks.ToDictionary(c => $"{c.Row},{c.Col}", c => c.IsHit);
     var currentUserId = Model.Result.RequestingUserId;
     var won = Model.Result.WinnerId == currentUserId;
+    var myShipSet = new HashSet<string>(Model.Result.MyShipPlacements.Select(c => $"{c[0]},{c[1]}"));
 }
 
 <div class="row justify-content-center">
     <div class="col-auto">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="fw-bold">
-                <i class="fas @(won ? "fa-trophy text-warning" : "fa-times-circle text-danger") me-2"></i>
-                @(won ? "¡Victoria!" : "Derrota")
-            </h4>
+        <div class="turn-banner @(won ? "your-turn" : "wait-turn") mb-3">
+            <i class="fas @(won ? "fa-trophy" : "fa-times-circle") fa-lg"></i>
+            <span>@(won ? "¡Victoria! Ganaste la partida." : "Derrota. Mejor suerte la próxima vez.")</span>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h5 class="fw-800 text-navy mb-0">vs @Model.Result.OpponentUserName</h5>
             <div class="d-flex gap-2">
-                <a asp-action="OpponentBoard" asp-route-gameId="@Model.GameId" class="btn btn-outline-info btn-sm">
+                <a asp-action="OpponentBoard" asp-route-gameId="@Model.GameId" class="btn btn-teal btn-sm">
                     <i class="fas fa-eye me-1"></i>Ver tablero del oponente
                 </a>
                 <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
@@ -23,57 +26,58 @@
             </div>
         </div>
 
-        <h5 class="fw-semibold mb-3">Tu tablero de ataque vs @Model.Result.OpponentUserName:</h5>
-        <div class="mb-3">
-            <span class="badge bg-danger me-2">💥 Acertado</span>
-            <span class="badge bg-success me-2">💧 Fallado</span>
+        <div class="d-flex gap-3 mb-3 small">
+            <span><span class="badge" style="background:rgba(220,53,69,.2);color:#DC3545;border:1px solid #DC3545">💥 Acertado</span></span>
+            <span><span class="badge" style="background:rgba(26,138,74,.15);color:#1A8A4A;border:1px solid #1A8A4A">💧 Fallado</span></span>
         </div>
 
-        <table class="table table-bordered" style="border-collapse:collapse">
-            @for (int row = 0; row < 12; row++)
-            {
-                <tr>
-                    @for (int col = 0; col < 12; col++)
-                    {
-                        var key = $"{row},{col}";
-                        var wasAttacked = myAttacks.ContainsKey(key);
-                        var isHit = wasAttacked && myAttacks[key];
-                        var bg = wasAttacked ? (isHit ? "bg-danger" : "bg-success") : "";
-                        <td class="p-0 text-center @bg" style="width:38px;height:38px">
-                            @if (isHit) { <span>💥</span> }
-                            else if (wasAttacked) { <span>💧</span> }
-                        </td>
-                    }
-                </tr>
-            }
-        </table>
-
-        <!-- My ship placement button -->
-        <div class="mt-3">
-            <button class="btn btn-outline-primary btn-sm" onclick="toggleMyPlacement()">
-                <i class="fas fa-ship me-1"></i>Ver mi posicionamiento de barcos
-            </button>
-        </div>
-
-        <div id="myPlacementBoard" style="display:none" class="mt-3">
-            @{
-                var myShipSet = new HashSet<string>(Model.Result.MyShipPlacements.Select(c => $"{c[0]},{c[1]}"));
-            }
-            <h6 class="fw-semibold mb-2">Mi posicionamiento:</h6>
-            <table class="table table-bordered" style="border-collapse:collapse">
+        <p class="d-md-none text-center text-muted small mb-2"><i class="fas fa-arrows-alt-h me-1"></i>Desliza para ver todo el tablero</p>
+        <div class="table-responsive">
+            <table class="battleship-board">
                 @for (int row = 0; row < 12; row++)
                 {
                     <tr>
                         @for (int col = 0; col < 12; col++)
                         {
-                            var occupied = myShipSet.Contains($"{row},{col}");
-                            <td class="p-0 text-center @(occupied ? "bg-primary" : "")" style="width:38px;height:38px">
-                                @if (occupied) { <span>🚢</span> }
+                            var key = $"{row},{col}";
+                            var wasAttacked = myAttacks.ContainsKey(key);
+                            var isHit = wasAttacked && myAttacks[key];
+                            var cellClass = wasAttacked ? (isHit ? "hit" : "miss") : "";
+                            <td class="@cellClass" style="cursor:default">
+                                @if (isHit) { <text>💥</text> }
+                                else if (wasAttacked) { <text>💧</text> }
                             </td>
                         }
                     </tr>
                 }
             </table>
+        </div>
+
+        <div class="mt-3">
+            <button class="btn btn-outline-primary btn-sm" type="button" onclick="toggleMyPlacement()">
+                <i class="fas fa-ship me-1"></i>Ver mi posicionamiento de barcos
+            </button>
+        </div>
+
+        <div id="myPlacementBoard" style="display:none" class="mt-3 fade-in-up">
+            <h6 class="fw-700 mb-2 text-navy">Mi posicionamiento:</h6>
+            <p class="d-md-none text-center text-muted small mb-2"><i class="fas fa-arrows-alt-h me-1"></i>Desliza para ver todo el tablero</p>
+        <div class="table-responsive">
+                <table class="battleship-board">
+                    @for (int row = 0; row < 12; row++)
+                    {
+                        <tr>
+                            @for (int col = 0; col < 12; col++)
+                            {
+                                var occupied = myShipSet.Contains($"{row},{col}");
+                                <td class="@(occupied ? "occupied" : "")" style="cursor:default">
+                                    @if (occupied) { <text>⚓</text> }
+                                </td>
+                            }
+                        </tr>
+                    }
+                </table>
+            </div>
         </div>
     </div>
 </div>
