@@ -1,4 +1,4 @@
-using AutoMapper;
+using LinkUp.Application.Mappings;
 using LinkUp.Application.Abstractions.Repositories;
 using LinkUp.Application.Abstractions.Services;
 using LinkUp.Application.DTOs.Request;
@@ -14,15 +14,13 @@ public class PostService : IPostService
 {
     private readonly IPostRepository _postRepo;
     private readonly IPostReactionRepository _reactionRepo;
-    private readonly IMapper _mapper;
     private readonly IFileStorageService _fileStorage;
 
     public PostService(IPostRepository postRepo, IPostReactionRepository reactionRepo,
-        IMapper mapper, IFileStorageService fileStorage)
+        IFileStorageService fileStorage)
     {
         _postRepo = postRepo;
         _reactionRepo = reactionRepo;
-        _mapper = mapper;
         _fileStorage = fileStorage;
     }
 
@@ -54,7 +52,7 @@ public class PostService : IPostService
 
         await _postRepo.AddAsync(post);
         var fullPost = await _postRepo.GetPostWithDetailsAsync(post.Id);
-        return Result<PostResponseDto>.Success(_mapper.Map<PostResponseDto>(fullPost!));
+        return Result<PostResponseDto>.Success(fullPost!.ToPostResponseDto());
     }
 
     public async Task<IEnumerable<PostResponseDto>> GetUserPostsAsync(int userId, int currentUserId)
@@ -63,7 +61,7 @@ public class PostService : IPostService
         var result = new List<PostResponseDto>();
         foreach (var post in posts.OrderByDescending(p => p.CreatedAt))
         {
-            var dto = _mapper.Map<PostResponseDto>(post);
+            var dto = post.ToPostResponseDto();
             var reaction = await _reactionRepo.GetUserReactionAsync(post.Id, currentUserId);
             dto.CurrentUserReaction = reaction?.ReactionType;
             result.Add(dto);
@@ -77,7 +75,7 @@ public class PostService : IPostService
         var result = new List<PostResponseDto>();
         foreach (var post in posts.OrderByDescending(p => p.CreatedAt))
         {
-            var dto = _mapper.Map<PostResponseDto>(post);
+            var dto = post.ToPostResponseDto();
             var reaction = await _reactionRepo.GetUserReactionAsync(post.Id, userId);
             dto.CurrentUserReaction = reaction?.ReactionType;
             result.Add(dto);

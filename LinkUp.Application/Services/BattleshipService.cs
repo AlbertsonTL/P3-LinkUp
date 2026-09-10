@@ -1,4 +1,4 @@
-using AutoMapper;
+using LinkUp.Application.Mappings;
 using LinkUp.Application.Abstractions.Repositories;
 using LinkUp.Application.Abstractions.Services;
 using LinkUp.Application.DTOs.Response;
@@ -17,7 +17,6 @@ public class BattleshipService : IBattleshipService
     private readonly IAttackRepository _attackRepo;
     private readonly IFriendshipRepository _friendshipRepo;
     private readonly UserManager<AppUser> _userManager;
-    private readonly IMapper _mapper;
 
     // Default ship config: sizes to place
     private static readonly int[] DefaultShipSizes = { 2, 3, 3, 4, 5 };
@@ -25,26 +24,25 @@ public class BattleshipService : IBattleshipService
 
     public BattleshipService(IBattleshipGameRepository gameRepo, IShipPlacementRepository shipRepo,
         IAttackRepository attackRepo, IFriendshipRepository friendshipRepo,
-        UserManager<AppUser> userManager, IMapper mapper)
+        UserManager<AppUser> userManager)
     {
         _gameRepo = gameRepo;
         _shipRepo = shipRepo;
         _attackRepo = attackRepo;
         _friendshipRepo = friendshipRepo;
         _userManager = userManager;
-        _mapper = mapper;
     }
 
     public async Task<IEnumerable<BattleshipGameResponseDto>> GetActiveGamesAsync(int userId)
     {
         var games = await _gameRepo.GetActiveGamesForUserAsync(userId);
-        return games.Select(g => _mapper.Map<BattleshipGameResponseDto>(g));
+        return games.Select(g => g.ToBattleshipGameResponseDto());
     }
 
     public async Task<IEnumerable<BattleshipGameResponseDto>> GetFinishedGamesAsync(int userId)
     {
         var games = await _gameRepo.GetFinishedGamesForUserAsync(userId);
-        return games.Select(g => _mapper.Map<BattleshipGameResponseDto>(g));
+        return games.Select(g => g.ToBattleshipGameResponseDto());
     }
 
     public async Task<IEnumerable<FriendResponseDto>> GetFriendsForNewGameAsync(int userId)
@@ -60,7 +58,7 @@ public class BattleshipService : IBattleshipService
             var friend = await _userManager.FindByIdAsync(fId.ToString());
             if (friend == null || !friend.IsActive) continue;
 
-            result.Add(_mapper.Map<FriendResponseDto>(friend));
+            result.Add(friend.ToFriendResponseDto());
         }
 
         return result;
