@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
+using LinkUp.Application.DTOs.Response;
 
 namespace LinkUp.Web.Models;
 
@@ -107,4 +108,12 @@ public class ProfileViewModel
     public IFormFile? ProfilePicture { get; set; }
 
     public string? CurrentProfilePicture { get; set; }
+
+    // Display-only data for the social-profile view — never bound from the
+    // edit form (no [BindProperty]/form fields target these), populated by
+    // AccountController from existing services on every GET/POST render.
+    public int UserId { get; set; }
+    public string UserName { get; set; } = string.Empty;
+    public int FriendsCount { get; set; }
+    public List<PostResponseDto> Posts { get; set; } = new();
 }

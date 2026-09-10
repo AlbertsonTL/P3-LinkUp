@@ -1,74 +1,106 @@
 @model LinkUp.Web.Models.BattleshipIndexViewModel
 @{ ViewData["Title"] = "Battleship"; }
 
-<h4 class="fw-bold mb-4"><i class="fas fa-ship me-2 text-primary"></i>Battleship</h4>
+<div class="page-header">
+    <h4><i class="fas fa-ship"></i>Battleship</h4>
+</div>
 
 <!-- Active Games -->
-<div class="card shadow-sm border-0 rounded-4 mb-4">
-    <div class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between align-items-center">
-        <h6 class="mb-0"><i class="fas fa-gamepad me-2"></i>Partidas activas</h6>
-        <a asp-action="NewGame" class="btn btn-sm btn-light"><i class="fas fa-plus me-1"></i>Nueva partida</a>
-    </div>
-    <div class="card-body p-0">
+<div class="card post-card mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-800 mb-0"><i class="fas fa-gamepad me-2 text-navy"></i>Partidas activas</h6>
+            <a asp-action="NewGame" class="btn btn-sm btn-gold"><i class="fas fa-plus me-1"></i>Nueva partida</a>
+        </div>
         @foreach (var game in Model.ActiveGames)
         {
             var opponent = game.Player1Id == Model.CurrentUserId ? game.Player2UserName : game.Player1UserName;
-            <div class="p-3 border-bottom d-flex align-items-center">
+            <div class="friend-item">
+                <div class="avatar-placeholder" style="width:42px;height:42px">
+                    @opponent.First().ToString().ToUpper()
+                </div>
                 <div class="flex-grow-1">
-                    <span class="fw-semibold">vs @opponent</span>
-                    <small class="text-muted d-block">
-                        Iniciada: @game.CreatedAt.ToString("dd/MM/yyyy HH:mm") · @Math.Round(game.HoursElapsed, 1) horas
-                    </small>
+                    <span class="friend-username d-block">vs @opponent</span>
+                    <span class="friend-meta">
+                        Iniciada: @game.CreatedAt.ToString("dd/MM/yyyy HH:mm") &middot; @Math.Round(game.HoursElapsed, 1) horas
+                    </span>
                 </div>
                 <div class="d-flex gap-2">
                     <a asp-action="EnterGame" asp-route-gameId="@game.Id" class="btn btn-sm btn-success">
                         <i class="fas fa-play me-1"></i>Entrar
                     </a>
-                    <a asp-action="ConfirmSurrender" asp-route-gameId="@game.Id" class="btn btn-sm btn-outline-danger">
+                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#surrenderModal-@game.Id">
                         <i class="fas fa-flag me-1"></i>Rendirse
-                    </a>
+                    </button>
                 </div>
             </div>
         }
         @if (!Model.ActiveGames.Any())
         {
-            <p class="text-center text-muted py-4">No tienes partidas activas.</p>
+            <div class="empty-state py-4">
+                <i class="fas fa-gamepad"></i>
+                <p class="mb-0 small">No tienes partidas activas.</p>
+            </div>
         }
     </div>
 </div>
 
+@foreach (var game in Model.ActiveGames)
+{
+    var opponent = game.Player1Id == Model.CurrentUserId ? game.Player2UserName : game.Player1UserName;
+    <div class="modal fade" id="surrenderModal-@game.Id" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-flag text-danger"></i>¿Rendirte?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-0">Si te rindes, <strong>@opponent</strong> será declarado ganador de esta partida.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+                    <form asp-action="Surrender" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="gameId" value="@game.Id" />
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-flag me-2"></i>Sí, rendirme</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 <!-- Stats -->
 <div class="row g-3 mb-4">
     <div class="col-md-4">
-        <div class="card bg-info text-white border-0 rounded-4 text-center p-3">
-            <h3 class="fw-bold">@Model.TotalGames</h3>
-            <p class="mb-0 small">Partidas jugadas</p>
+        <div class="card post-card text-center p-3">
+            <h3 class="fw-800 text-navy mb-0">@Model.TotalGames</h3>
+            <p class="mb-0 small text-muted">Partidas jugadas</p>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card bg-success text-white border-0 rounded-4 text-center p-3">
-            <h3 class="fw-bold">@Model.GamesWon</h3>
-            <p class="mb-0 small">Victorias</p>
+        <div class="card post-card text-center p-3">
+            <h3 class="fw-800 mb-0" style="color:#1A8A4A">@Model.GamesWon</h3>
+            <p class="mb-0 small text-muted">Victorias</p>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card bg-danger text-white border-0 rounded-4 text-center p-3">
-            <h3 class="fw-bold">@Model.GamesLost</h3>
-            <p class="mb-0 small">Derrotas</p>
+        <div class="card post-card text-center p-3">
+            <h3 class="fw-800 text-danger mb-0">@Model.GamesLost</h3>
+            <p class="mb-0 small text-muted">Derrotas</p>
         </div>
     </div>
 </div>
 
 <!-- History -->
-<div class="card shadow-sm border-0 rounded-4">
-    <div class="card-header bg-secondary text-white rounded-top-4">
-        <h6 class="mb-0"><i class="fas fa-history me-2"></i>Historial de partidas</h6>
-    </div>
-    <div class="card-body p-0">
+<div class="card post-card">
+    <div class="card-body">
+        <h6 class="fw-800 mb-3"><i class="fas fa-history me-2 text-navy"></i>Historial de partidas</h6>
         <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr class="text-muted small text-uppercase">
                         <th>Oponente</th>
                         <th>Inicio</th>
                         <th>Fin</th>
@@ -90,7 +122,7 @@
                             <td>@(game.FinishedAt?.ToString("dd/MM/yy") ?? "-")</td>
                             <td>@Math.Round(game.HoursElapsed, 1)h</td>
                             <td>
-                                <span class="badge @(won ? "bg-success" : "bg-danger")">
+                                <span class="badge-status @(won ? "badge-status-accepted" : "badge-status-rejected")">
                                     @(won ? "Victoria" : "Derrota")
                                 </span>
                             </td>
@@ -107,7 +139,10 @@
         </div>
         @if (!Model.FinishedGames.Any())
         {
-            <p class="text-center text-muted py-4">No tienes partidas finalizadas.</p>
+            <div class="empty-state py-4">
+                <i class="fas fa-history"></i>
+                <p class="mb-0 small">No tienes partidas finalizadas.</p>
+            </div>
         }
     </div>
 </div>

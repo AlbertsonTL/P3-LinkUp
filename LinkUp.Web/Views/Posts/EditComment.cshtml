@@ -3,10 +3,10 @@
 
 <div class="row justify-content-center">
     <div class="col-md-6">
-        <div class="card shadow border-0 rounded-4">
-            <div class="card-body p-4">
-                <h4 class="fw-bold mb-4">
-                    <i class="fas fa-edit me-2 text-primary"></i>Editar comentario
+        <div class="card post-card">
+            <div class="card-body">
+                <h4 class="fw-800 mb-4">
+                    <i class="fas fa-edit me-2 text-gold"></i>Editar comentario
                 </h4>
 
                 <form asp-action="EditComment" method="post">
@@ -29,13 +29,13 @@
                         </button>
                         @if (Model.ReturnTo == "Friends")
                         {
-                            <a asp-controller="Friends" asp-action="Index" class="btn btn-outline-secondary">
+                            <a asp-controller="Friends" asp-action="Index" class="btn btn-ghost">
                                 <i class="fas fa-times me-2"></i>Cancelar
                             </a>
                         }
                         else
                         {
-                            <a asp-controller="Posts" asp-action="Index" class="btn btn-outline-secondary">
+                            <a asp-controller="Posts" asp-action="Index" class="btn btn-ghost">
                                 <i class="fas fa-times me-2"></i>Cancelar
                             </a>
                         }

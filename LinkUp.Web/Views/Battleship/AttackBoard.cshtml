@@ -7,6 +7,8 @@
     var isMyTurn = Model.Board.IsMyTurn && !isFinished;
 }
 
+<div id="battleContent" data-my-turn="@(isMyTurn ? "1" : "0")" data-finished="@(isFinished ? "1" : "0")" data-game-id="@Model.GameId">
+
 @if (isFinished)
 {
     <div class="alert alert-info text-center fade-in-up">
@@ -57,9 +59,9 @@ else
                     <a asp-action="MyBoard" asp-route-gameId="@Model.GameId" class="btn btn-outline-secondary btn-sm">
                         <i class="fas fa-ship me-1"></i>Ver mis barcos
                     </a>
-                    <a asp-action="ConfirmSurrender" asp-route-gameId="@Model.GameId" class="btn btn-danger btn-sm">
+                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#surrenderModal">
                         <i class="fas fa-flag me-1"></i>Rendirse
-                    </a>
+                    </button>
                 }
                 else
                 {
@@ -79,6 +81,7 @@ else
             <span><span class="badge bg-light text-muted border">Sin atacar</span></span>
         </div>
 
+        <p class="d-md-none text-center text-muted small mb-2"><i class="fas fa-arrows-alt-h me-1"></i>Desliza para ver todo el tablero</p>
         <div class="table-responsive">
             <table class="battleship-board" id="attackTable">
                 @for (int row = 0; row < 12; row++)
@@ -128,26 +131,159 @@ else
     </div>
 </div>
 
+</div><!-- /#battleContent -->
+
+<div class="modal fade" id="surrenderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-flag text-danger"></i>¿Rendirte?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-0">Si te rindes, tu oponente será declarado ganador de esta partida.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+                <form asp-action="Surrender" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="gameId" value="@Model.GameId" />
+                    <button type="submit" class="btn btn-danger"><i class="fas fa-flag me-2"></i>Sí, rendirme</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="attackConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-crosshairs text-gold"></i>Confirmar ataque</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0" id="confirmAttackText">¿Atacar esta celda?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-gold" onclick="confirmAttack()">
+                    <i class="fas fa-crosshairs me-2"></i>Atacar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
 <script>
+// ---------------------------------------------------------------
+// Battleship — interacción sin recarga completa de página.
+// IMPORTANTE: no se creó ningún endpoint nuevo. Se usa fetch() contra
+// las MISMAS rutas /Battleship/Attack y /Battleship/AttackBoard que ya
+// existían, y se reemplaza solo el fragmento #battleContent del HTML
+// devuelto. Si fetch falla por cualquier razón, se recurre al mismo
+// comportamiento original (submit de formulario / recarga completa),
+// así que nunca se pierde funcionalidad.
+// ---------------------------------------------------------------
+
+var gameId = @Model.GameId;
+var pollInterval = null;
+
 function submitAttack(gameId, row, col) {
-    if (confirm(`¿Atacar la celda (${row+1}, ${col+1})?`)) {
-        document.getElementById('attackRow').value = row;
-        document.getElementById('attackCol').value = col;
-        document.getElementById('attackForm').submit();
+    document.getElementById('confirmAttackText').textContent =
+        '¿Atacar la celda (' + (row + 1) + ', ' + (col + 1) + ')?';
+    document.getElementById('attackRow').value = row;
+    document.getElementById('attackCol').value = col;
+    var modalEl = document.getElementById('attackConfirmModal');
+    var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.show();
+}
+
+function confirmAttack() {
+    var modalEl = document.getElementById('attackConfirmModal');
+    var modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) modal.hide();
+
+    var form = document.getElementById('attackForm');
+
+    // Fallback path: exactly what happened before this change.
+    function fallbackSubmit() { form.submit(); }
+
+    if (!window.fetch) { fallbackSubmit(); return; }
+
+    fetch(form.getAttribute('action'), {
+        method: 'POST',
+        body: new FormData(form),
+        credentials: 'same-origin'
+    })
+    .then(function (response) {
+        return response.text().then(function (html) {
+            return { html: html, url: response.url };
+        });
+    })
+    .then(function (result) { handleBoardResponse(result); })
+    .catch(function () { fallbackSubmit(); });
+}
+
+function handleBoardResponse(result) {
+    if (!result.url || result.url.indexOf('/Battleship/AttackBoard') === -1) {
+        // The game likely finished or moved to another screen (e.g. GameResult).
+        // Do a normal navigation — safest option, matches original behavior.
+        window.location.href = result.url || ('/Battleship/AttackBoard?gameId=' + gameId);
+        return;
+    }
+    if (!swapBattleContent(result.html)) {
+        // Unexpected response shape — fall back to a full reload rather than
+        // leaving the user looking at a stale board.
+        window.location.href = '/Battleship/AttackBoard?gameId=' + gameId;
     }
 }
 
-// Auto-refresh cada 6s cuando NO es mi turno y la partida sigue activa
-@if (!isMyTurn && !isFinished)
-{
-    <text>
-    var refreshInterval = setInterval(function() {
-        // Recarga el controlador EnterGame que redirige correctamente
-        // según el estado actual (rendición, fin de partida, turno)
-        window.location.href = '/Battleship/AttackBoard?gameId=@Model.GameId';
-    }, 6000);
-    </text>
+function swapBattleContent(html) {
+    try {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, 'text/html');
+        var newContent = doc.getElementById('battleContent');
+        var oldContent = document.getElementById('battleContent');
+        if (!newContent || !oldContent) return false;
+        oldContent.replaceWith(newContent);
+        restartPollingIfNeeded();
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
+
+function restartPollingIfNeeded() {
+    if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+    var el = document.getElementById('battleContent');
+    if (!el) return;
+    var myTurn = el.getAttribute('data-my-turn') === '1';
+    var finished = el.getAttribute('data-finished') === '1';
+    if (!myTurn && !finished) {
+        pollInterval = setInterval(pollBoard, 6000);
+    }
+}
+
+function pollBoard() {
+    if (!window.fetch) {
+        window.location.href = '/Battleship/AttackBoard?gameId=' + gameId;
+        return;
+    }
+    fetch('/Battleship/AttackBoard?gameId=' + gameId, { credentials: 'same-origin' })
+        .then(function (response) {
+            return response.text().then(function (html) {
+                return { html: html, url: response.url };
+            });
+        })
+        .then(function (result) { handleBoardResponse(result); })
+        .catch(function () {
+            // Defensive fallback: same full-reload behavior as before this change.
+            window.location.href = '/Battleship/AttackBoard?gameId=' + gameId;
+        });
+}
+
+document.addEventListener('DOMContentLoaded', restartPollingIfNeeded);
 </script>
 }

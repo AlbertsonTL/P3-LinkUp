@@ -1,59 +1,123 @@
 @model LinkUp.Web.Models.ProfileViewModel
-@{ ViewData["Title"] = "Mi Perfil"; }
+@{
+    ViewData["Title"] = "Mi Perfil";
+    ViewData["CurrentUserId"] = Model.UserId;
+    ViewData["ReturnTo"] = "Profile";
+}
 
-<div class="row justify-content-center">
-    <div class="col-md-7">
-        <div class="card shadow border-0 rounded-4">
-            <div class="card-body p-5">
-                <h3 class="fw-bold mb-4"><i class="fas fa-user-edit me-2 text-primary"></i>Mi Perfil</h3>
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+
+        @if (TempData["Success"] != null)
+        {
+            <span class="visually-hidden" data-lu-toast="success">@TempData["Success"]</span>
+        }
+
+        <!-- Profile hero -->
+        <div class="card post-card mb-4 profile-hero">
+            <div class="card-body text-center">
                 @if (Model.CurrentProfilePicture != null)
                 {
-                    <div class="text-center mb-4">
-                        <img src="@Model.CurrentProfilePicture" class="rounded-circle border" style="width:100px;height:100px;object-fit:cover" alt="Foto de perfil" />
+                    <img src="@Model.CurrentProfilePicture" class="avatar avatar-xl mb-3" alt="Foto de perfil" />
+                }
+                else
+                {
+                    <div class="avatar-placeholder avatar-xl mb-3 mx-auto profile-avatar-placeholder">
+                        @(Model.FirstName.Length > 0 ? Model.FirstName[0].ToString().ToUpper() : "?")
                     </div>
                 }
-                <form asp-action="Profile" method="post" enctype="multipart/form-data">
-                    @Html.AntiForgeryToken()
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label asp-for="FirstName" class="form-label fw-semibold"></label>
-                            <input asp-for="FirstName" class="form-control" />
-                            <span asp-validation-for="FirstName" class="text-danger small"></span>
-                        </div>
-                        <div class="col-md-6">
-                            <label asp-for="LastName" class="form-label fw-semibold"></label>
-                            <input asp-for="LastName" class="form-control" />
-                            <span asp-validation-for="LastName" class="text-danger small"></span>
-                        </div>
-                        <div class="col-12">
-                            <label asp-for="Phone" class="form-label fw-semibold"></label>
-                            <input asp-for="Phone" class="form-control" />
-                            <span asp-validation-for="Phone" class="text-danger small"></span>
-                        </div>
-                        <div class="col-12">
-                            <label asp-for="ProfilePicture" class="form-label fw-semibold"></label>
-                            <input asp-for="ProfilePicture" class="form-control" type="file" accept="image/*" />
-                        </div>
-                        <div class="col-md-6">
-                            <label asp-for="Password" class="form-label fw-semibold"></label>
-                            <input asp-for="Password" class="form-control" placeholder="Dejar en blanco para no cambiar" />
-                            <span asp-validation-for="Password" class="text-danger small"></span>
-                        </div>
-                        <div class="col-md-6">
-                            <label asp-for="ConfirmPassword" class="form-label fw-semibold"></label>
-                            <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirmar nueva contraseña" />
-                            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
-                        </div>
+                <h3 class="fw-800 mb-0">@Model.FirstName @Model.LastName</h3>
+                <p class="text-muted mb-3">@@@Model.UserName</p>
+
+                <div class="d-flex justify-content-center gap-4 profile-stats">
+                    <div>
+                        <span class="fw-800 d-block">@Model.FriendsCount</span>
+                        <span class="text-muted small">Amigos</span>
                     </div>
-                    <div class="mt-4 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Guardar cambios</button>
-                        <a asp-controller="Posts" asp-action="Index" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Volver al inicio
-                        </a>
+                    <div>
+                        <span class="fw-800 d-block">@Model.Posts.Count</span>
+                        <span class="text-muted small">Publicaciones</span>
                     </div>
-                </form>
+                </div>
+
+                <button class="btn btn-outline-primary btn-sm mt-3" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#editProfileForm">
+                    <i class="fas fa-user-edit me-1"></i>Editar perfil
+                </button>
+                <a asp-controller="Friends" asp-action="Index" class="btn btn-ghost btn-sm mt-3">
+                    <i class="fas fa-users me-1"></i>Ver amigos
+                </a>
             </div>
         </div>
+
+        <!-- Edit form (collapsed by default) -->
+        <div class="collapse mb-4" id="editProfileForm">
+            <div class="card post-card">
+                <div class="card-body">
+                    <h6 class="fw-800 mb-3"><i class="fas fa-user-edit me-2 text-navy"></i>Editar información</h6>
+                    <form asp-action="Profile" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="FirstName" class="form-label fw-semibold"></label>
+                                <input asp-for="FirstName" class="form-control" />
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="LastName" class="form-label fw-semibold"></label>
+                                <input asp-for="LastName" class="form-control" />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Phone" class="form-label fw-semibold"></label>
+                                <input asp-for="Phone" class="form-control" />
+                                <span asp-validation-for="Phone" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="ProfilePicture" class="form-label fw-semibold"></label>
+                                <input asp-for="ProfilePicture" class="form-control" type="file" accept="image/*" />
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Password" class="form-label fw-semibold"></label>
+                                <input asp-for="Password" class="form-control" placeholder="Dejar en blanco para no cambiar" />
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ConfirmPassword" class="form-label fw-semibold"></label>
+                                <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirmar nueva contraseña" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Guardar cambios</button>
+                            <button type="button" class="btn btn-ghost" data-bs-toggle="collapse" data-bs-target="#editProfileForm">
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Own posts -->
+        <div class="section-divider">Mis publicaciones</div>
+        @if (Model.Posts.Any())
+        {
+            foreach (var post in Model.Posts)
+            {
+                <partial name="~/Views/Shared/_PostCard.cshtml" model="post" />
+            }
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fas fa-newspaper"></i>
+                <p class="fw-600">Aún no has publicado nada.</p>
+                <a asp-controller="Posts" asp-action="Index" class="btn btn-primary btn-sm mt-2">
+                    <i class="fas fa-plus me-1"></i>Crear mi primera publicación
+                </a>
+            </div>
+        }
     </div>
 </div>

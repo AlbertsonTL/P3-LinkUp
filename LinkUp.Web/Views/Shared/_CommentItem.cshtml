@@ -6,29 +6,27 @@
     var isReply = Model.ParentCommentId.HasValue;
 }
 
-<div class="d-flex mt-2 @(isReply ? "ms-4" : "")">
+<div class="d-flex mt-2 @(isReply ? "reply-indent" : "")">
     @if (Model.UserProfilePicture != null)
     {
-        <img src="@Model.UserProfilePicture" class="rounded-circle me-2 border flex-shrink-0"
-             style="width:32px;height:32px;object-fit:cover" alt="@Model.UserName" />
+        <img src="@Model.UserProfilePicture" class="avatar avatar-sm me-2 flex-shrink-0" alt="@Model.UserName" />
     }
     else
     {
-        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2 flex-shrink-0 text-white"
-             style="width:32px;height:32px;font-size:12px">
+        <div class="avatar-placeholder me-2 flex-shrink-0" style="width:32px;height:32px;font-size:.75rem">
             @Model.UserName.First().ToString().ToUpper()
         </div>
     }
     <div class="flex-grow-1">
-        <div class="bg-light rounded-3 px-3 py-2">
-            <span class="fw-semibold small">@Model.UserName</span>
-            <p class="mb-0 small">@Model.Content</p>
+        <div class="comment-bubble">
+            <span class="comment-author d-block">@Model.UserName</span>
+            <p class="mb-0">@Model.Content</p>
         </div>
-        <div class="d-flex gap-2 mt-1 align-items-center flex-wrap">
-            <small class="text-muted">@Model.CreatedAt.ToString("dd/MM HH:mm")</small>
+        <div class="d-flex gap-3 mt-1 align-items-center flex-wrap">
+            <span class="comment-time">@Model.CreatedAt.ToString("dd/MM HH:mm")</span>
             @if (!isReply)
             {
-                <button class="btn btn-link btn-sm p-0 text-primary small" onclick="toggleReplyForm('@Model.Id')">
+                <button class="btn btn-ghost btn-sm p-0 px-1" onclick="toggleReplyForm('@Model.Id')">
                     <i class="fas fa-reply me-1"></i>Responder
                 </button>
             }
@@ -36,14 +34,14 @@
             {
                 <a asp-controller="Posts" asp-action="EditComment"
                    asp-route-commentId="@Model.Id" asp-route-returnTo="@returnTo"
-                   class="btn btn-link btn-sm p-0 text-secondary small">
+                   class="btn btn-ghost btn-sm p-0 px-1">
                     <i class="fas fa-edit me-1"></i>Editar
                 </a>
                 <form asp-controller="Posts" asp-action="DeleteComment" method="post" class="d-inline">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="commentId" value="@Model.Id" />
                     <input type="hidden" name="returnTo" value="@returnTo" />
-                    <button type="submit" class="btn btn-link btn-sm p-0 text-danger small"
+                    <button type="submit" class="btn btn-ghost btn-sm p-0 px-1 text-danger"
                             onclick="return confirm('¿Eliminar comentario?')">
                         <i class="fas fa-trash me-1"></i>Eliminar
                     </button>
@@ -61,7 +59,7 @@
                     <input type="hidden" name="returnTo" value="@returnTo" />
                     <div class="input-group input-group-sm">
                         <input type="text" name="Content" class="form-control" placeholder="Tu respuesta..." required />
-                        <button type="submit" class="btn btn-outline-primary">
+                        <button type="submit" class="btn btn-outline-primary" aria-label="Enviar respuesta">
                             <i class="fas fa-reply"></i>
                         </button>
                     </div>
@@ -87,7 +85,7 @@
                     <input type="hidden" name="returnTo" value="@returnTo" />
                     <div class="input-group input-group-sm">
                         <input type="text" name="Content" class="form-control" placeholder="Tu respuesta..." required />
-                        <button type="submit" class="btn btn-outline-primary">
+                        <button type="submit" class="btn btn-outline-primary" aria-label="Enviar respuesta">
                             <i class="fas fa-reply"></i>
                         </button>
                     </div>

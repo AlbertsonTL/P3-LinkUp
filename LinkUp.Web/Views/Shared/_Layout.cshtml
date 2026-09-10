@@ -7,6 +7,9 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body class="@(User.Identity?.IsAuthenticated == true ? "layout-authenticated" : "")">
@@ -19,27 +22,37 @@
                 <img src="/favicon.ico" alt="LinkUp" class="brand-icon" />
                 LinkUp
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    style="border-color:rgba(255,255,255,.3)">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+
+            <div class="d-flex align-items-center gap-2">
+                <form method="post" action="/Account/Logout" id="logoutFormMobile" class="d-lg-none m-0">
+                    @Html.AntiForgeryToken()
+                </form>
+                <button type="submit" form="logoutFormMobile" class="btn-icon d-lg-none" aria-label="Cerrar sesión">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-label="Abrir menú de navegación">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Posts" ? "active" : "")"
-                           href="/Posts">
+                           href="/Posts" aria-current="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Posts" ? "page" : null)">
                             <i class="fas fa-home"></i> Inicio
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Friends" ? "active" : "")"
-                           href="/Friends">
+                           href="/Friends" aria-current="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Friends" ? "page" : null)">
                             <i class="fas fa-users"></i> Amigos
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "FriendRequests" ? "active" : "")"
-                           href="/FriendRequests">
+                           href="/FriendRequests" aria-current="@(ViewContext.RouteData.Values["controller"]?.ToString() == "FriendRequests" ? "page" : null)">
                             <i class="fas fa-user-plus"></i> Solicitudes
                             @if (ViewBag.PendingRequestsCount != null && (int)ViewBag.PendingRequestsCount > 0)
                             {
@@ -49,13 +62,13 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Battleship" ? "active" : "")"
-                           href="/Battleship">
+                           href="/Battleship" aria-current="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Battleship" ? "page" : null)">
                             <i class="fas fa-ship"></i> Battleship
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Account" && ViewContext.RouteData.Values["action"]?.ToString() == "Profile" ? "active" : "")"
-                           href="/Account/Profile">
+                           href="/Account/Profile" aria-current="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Account" && ViewContext.RouteData.Values["action"]?.ToString() == "Profile" ? "page" : null)">
                             <i class="fas fa-user-circle"></i> Mi Perfil
                         </a>
                     </li>
@@ -69,25 +82,20 @@
             </div>
         </div>
     </nav>
-    <div style="margin-top:70px">
-        <main class="container py-4">
-            @if (TempData["GlobalSuccess"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show mb-3">
-                    <i class="fas fa-check-circle me-2"></i>@TempData["GlobalSuccess"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
-            @if (TempData["GlobalError"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show mb-3">
-                    <i class="fas fa-exclamation-circle me-2"></i>@TempData["GlobalError"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
-            @RenderBody()
-        </main>
-    </div>
+
+    <main class="container py-4 pb-mobile-nav">
+        @if (TempData["GlobalSuccess"] != null)
+        {
+            <span class="visually-hidden" data-lu-toast="success">@TempData["GlobalSuccess"]</span>
+        }
+        @if (TempData["GlobalError"] != null)
+        {
+            <span class="visually-hidden" data-lu-toast="danger">@TempData["GlobalError"]</span>
+        }
+        @RenderBody()
+    </main>
+
+    <partial name="_BottomNav" />
 }
 else
 {
@@ -99,3 +107,4 @@ else
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+

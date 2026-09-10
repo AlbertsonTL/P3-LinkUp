@@ -3,12 +3,12 @@
     Layout = "_Layout";
 }
 
-<div class="min-vh-100 d-flex align-items-center" style="background: linear-gradient(135deg, #dc3545, #6f42c1);">
+<div class="lu-hero">
     <div class="container text-center text-white">
-        <i class="fas fa-exclamation-triangle fa-5x mb-4"></i>
-        <h1 class="fw-bold">¡Ocurrió un error!</h1>
-        <p class="lead">Lo sentimos, algo salió mal. Por favor intenta nuevamente.</p>
-        <a asp-controller="Posts" asp-action="Index" class="btn btn-light btn-lg mt-3">
+        <i class="fas fa-exclamation-triangle fa-4x mb-4" style="color:var(--lu-gold)"></i>
+        <h1 class="fw-800">¡Ocurrió un error!</h1>
+        <p class="lead lu-hero-subtitle mx-auto">Lo sentimos, algo salió mal. Por favor intenta nuevamente.</p>
+        <a asp-controller="Posts" asp-action="Index" class="btn btn-gold btn-lg mt-3">
             <i class="fas fa-home me-2"></i>Volver al inicio
         </a>
     </div>
