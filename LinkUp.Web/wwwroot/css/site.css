@@ -1,10 +1,9 @@
-/* =========================================================
-   LinkUp - Design System
+/* LinkUp - Design System
    Paleta:
    Azul marino #002060
    Dorado    #E0A040
    Turquesa  #0080A0
-   ========================================================= */
+*/
 
 :root {
     /* Colores principales */
@@ -28,16 +27,8 @@
     --lu-warning: #E0A040;
     --lu-danger: #DC3545;
     --lu-info: #0080A0;
-    /* Sistema semántico */
-    --lu-primary: var(--lu-navy);
-    --lu-primary-hover: var(--lu-navy-mid);
-    --lu-secondary: var(--lu-teal);
-    --lu-accent: var(--lu-gold);
-    --lu-accent-hover: var(--lu-gold-light);
-    --lu-background: var(--lu-off-white);
     --lu-surface: var(--lu-white);
-    --lu-surface-alt: var(--lu-gray-100);
-    --lu-border: var(--lu-gray-100);
+    --lu-input-focus-bg: #E6F7FA;
     /* Tipografía */
     --lu-font-heading: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
     --lu-font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -62,10 +53,7 @@
     --lu-auth-overlay: rgba(0, 0, 0, .452);
 }
 
-
-/* =========================================================
-   DARK MODE
-   ========================================================= */
+/* DARK MODE */
 
 [data-theme="dark"] {
     /* Fondos */
@@ -76,10 +64,8 @@
     --lu-text: #EAF0FF;
     --lu-heading: #FFFFFF;
     /* Superficies */
-    --lu-background: var(--lu-off-white);
     --lu-surface: #182033;
-    --lu-surface-alt: var(--lu-gray-100);
-    --lu-border: var(--lu-gray-100);
+    --lu-input-focus-bg: #263A5A;
     /* Overlays */
     --lu-background-overlay: rgba(8, 12, 22, .78);
     --lu-auth-overlay: rgba(4, 8, 18, .68);
@@ -87,7 +73,6 @@
     --lu-shadow: 0 4px 20px rgba(0, 0, 0, .35);
     --lu-shadow-md: 0 8px 30px rgba(0, 0, 0, .45);
 }
-
 
 /* RESET & BASE */
 
@@ -103,7 +88,7 @@ html {
 
 body {
     font-family: var(--lu-font-body);
-    background-color: var(--lu-background);
+    background-color: var(--lu-off-white);
     background-image: linear-gradient(var(--lu-background-overlay), var(--lu-background-overlay)), url('../img/background.jpg');
     background-size: cover;
     background-position: center;
@@ -115,7 +100,6 @@ body {
     margin: 0;
     transition: background-color var(--lu-transition), color var(--lu-transition);
 }
-
 
 /* TIPOGRAFÍA */
 
@@ -143,7 +127,6 @@ h6,
     color: var(--lu-heading);
 }
 
-
 /* LINKS */
 a {
     color: var(--lu-teal);
@@ -155,12 +138,10 @@ a:hover {
     color: var(--lu-navy);
 }
 
-
 /* IMÁGENES */
 img {
     max-width: 100%;
 }
-
 
 /* SCROLLBAR */
 ::-webkit-scrollbar {
@@ -181,10 +162,7 @@ img {
     background: var(--lu-navy);
 }
 
-
-/* =========================================================
-   NAVBAR
-   ========================================================= */
+/* NAVBAR */
 
 .navbar {
     background: linear-gradient(135deg, var(--lu-navy-dark) 0%, var(--lu-navy) 60%, var(--lu-navy-mid) 100%) !important;
@@ -233,7 +211,6 @@ img {
     font-size: .85rem;
 }
 
-
 /* NAVBAR TOGGLER */
 .navbar .navbar-toggler {
     border-color: rgba(255, 255, 255, .3);
@@ -248,7 +225,6 @@ img {
     background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255,255,255,0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
 
-
 /* NAV BADGE */
 .nav-badge {
     background: var(--lu-gold);
@@ -261,7 +237,6 @@ img {
     text-align: center;
     line-height: 1.6;
 }
-
 
 /* LOGOUT */
 
@@ -280,13 +255,11 @@ img {
     border-color: rgba(255, 255, 255, .5);
 }
 
-
 /* AUTHENTICATED LAYOUT */
 
 body.layout-authenticated {
     padding-top: 70px;
 }
-
 
 /* MOBILE NAV SPACE */
 
@@ -297,10 +270,7 @@ body.layout-authenticated {
     }
 }
 
-
-/* =========================================================
-   NAVBAR ICON BUTTONS
-   ========================================================= */
+/* NAVBAR ICON BUTTONS */
 
 .navbar .btn-icon {
     background: rgba(255, 255, 255, .10);
@@ -320,10 +290,7 @@ body.layout-authenticated {
     margin-right: 10px;
 }
 
-
-/* =========================================================
-   CARDS
-   ========================================================= */
+/* CARDS */
 
 .card {
     border: 1px solid var(--lu-gray-100) !important;
@@ -342,10 +309,7 @@ body.layout-authenticated {
     padding: 1.4rem;
 }
 
-
-/* =========================================================
-   BUTTONS
-   ========================================================= */
+/* BUTTONS */
 
 .btn {
     border-radius: var(--lu-radius-sm);
@@ -355,7 +319,6 @@ body.layout-authenticated {
     transition: all var(--lu-transition);
     border-width: 1.5px;
 }
-
 
 /* Primary */
 
@@ -377,7 +340,6 @@ body.layout-authenticated {
     transform: translateY(0);
 }
 
-
 /* Gold */
 
 .btn-gold {
@@ -393,7 +355,6 @@ body.layout-authenticated {
     transform: translateY(-1px);
     color: var(--lu-navy-dark);
 }
-
 
 /* Teal */
 
@@ -411,7 +372,6 @@ body.layout-authenticated {
     transform: translateY(-1px);
 }
 
-
 /* Outline primary */
 
 .btn-outline-primary {
@@ -426,7 +386,6 @@ body.layout-authenticated {
     transform: translateY(-1px);
 }
 
-
 /* Outline secondary */
 
 .btn-outline-secondary {
@@ -440,7 +399,6 @@ body.layout-authenticated {
     color: var(--lu-text);
     transform: translateY(-1px);
 }
-
 
 /* Danger */
 
@@ -467,7 +425,6 @@ body.layout-authenticated {
     box-shadow: 0 4px 12px rgba(220, 53, 69, .30);
 }
 
-
 /* Success */
 
 .btn-success {
@@ -482,7 +439,6 @@ body.layout-authenticated {
     box-shadow: 0 4px 12px rgba(26, 138, 74, .30);
 }
 
-
 /* Link */
 
 .btn-link {
@@ -494,7 +450,6 @@ body.layout-authenticated {
 .btn-link:hover {
     color: var(--lu-navy);
 }
-
 
 /* Button sizes */
 
@@ -508,10 +463,7 @@ body.layout-authenticated {
     font-size: 1rem;
 }
 
-
-/* =========================================================
-   FORMS
-   ========================================================= */
+/* FORMS */
 
 .form-control,
 .form-select {
@@ -537,9 +489,17 @@ body.layout-authenticated {
 
 .form-control:focus,
 .form-select:focus {
+    background-color: var(--lu-input-focus-bg);
+    color: var(--lu-text);
+    -webkit-text-fill-color: var(--lu-text);
     border-color: var(--lu-navy);
     box-shadow: 0 0 0 3px rgba(0, 32, 96, .12);
     outline: none;
+}
+
+.form-control[type="file"]:focus::file-selector-button {
+    background-color: var(--lu-input-focus-bg);
+    color: var(--lu-text);
 }
 
 .form-label {
@@ -556,7 +516,6 @@ body.layout-authenticated {
     border-radius: var(--lu-radius-sm) 0 0 var(--lu-radius-sm);
 }
 
-
 /* Radio */
 
 .form-check-input:checked {
@@ -569,10 +528,7 @@ body.layout-authenticated {
     border-color: var(--lu-navy);
 }
 
-
-/* =========================================================
-   ALERTS
-   ========================================================= */
+/* ALERTS */
 
 .alert {
     border-radius: var(--lu-radius);
@@ -605,10 +561,7 @@ body.layout-authenticated {
     border-left: 4px solid var(--lu-gold);
 }
 
-
-/* =========================================================
-   POSTS & FEED
-   ========================================================= */
+/* POSTS & FEED */
 
 .post-card {
     border-radius: var(--lu-radius) !important;
@@ -623,10 +576,7 @@ body.layout-authenticated {
     transform: translateY(-2px);
 }
 
-
-/* =========================================================
-   AVATAR
-   ========================================================= */
+/* AVATAR */
 
 .avatar {
     width: 42px;
@@ -670,10 +620,7 @@ body.layout-authenticated {
     font-size: 1.9rem;
 }
 
-
-/* =========================================================
-   PROFILE STATS
-   ========================================================= */
+/* PROFILE STATS */
 
 .profile-hero .profile-stats>div {
     min-width: 70px;
@@ -683,9 +630,7 @@ body.layout-authenticated {
     font-size: 1.15rem;
 }
 
-/* =========================================================
-   POST AUTHOR
-   ========================================================= */
+/* POST AUTHOR */
 
 .post-author-name {
     font-weight: 700;
@@ -702,9 +647,7 @@ body.layout-authenticated {
     opacity: .65;
 }
 
-/* =========================================================
-   REACTIONS
-   ========================================================= */
+/* REACTIONS */
 
 .reaction-btn {
     border-radius: 99px !important;
@@ -743,9 +686,7 @@ body.layout-authenticated {
     color: var(--lu-white) !important;
 }
 
-/* =========================================================
-   COMMENTS
-   ========================================================= */
+/* COMMENTS */
 
 .comment-bubble {
     background: var(--lu-gray-100);
@@ -769,9 +710,7 @@ body.layout-authenticated {
     padding-left: 2.5rem;
 }
 
-/* =========================================================
-   BATTLESHIP BOARD
-   ========================================================= */
+/* BATTLESHIP BOARD */
 
 .battleship-board {
     border-collapse: collapse;
@@ -835,9 +774,7 @@ body.layout-authenticated {
     }
 }
 
-/* =========================================================
-   SHIP SELECTOR
-   ========================================================= */
+/* SHIP SELECTOR */
 
 .ship-option {
     display: flex;
@@ -863,9 +800,7 @@ body.layout-authenticated {
     box-shadow: 0 0 0 3px rgba(224, 160, 64, .2);
 }
 
-/* =========================================================
-   FRIEND LIST
-   ========================================================= */
+/* FRIEND LIST */
 
 .friend-item {
     display: flex;
@@ -900,9 +835,7 @@ body.layout-authenticated {
     opacity: .65;
 }
 
-/* =========================================================
-   STATUS BADGES
-   ========================================================= */
+/* STATUS BADGES */
 
 .badge-status,
 .status-badge,
@@ -933,9 +866,7 @@ body.layout-authenticated {
     color: #A9761E;
 }
 
-/* =========================================================
-   GAME HISTORY
-   ========================================================= */
+/* GAME HISTORY */
 
 .game-card {
     border-left: 4px solid var(--lu-navy) !important;
@@ -971,9 +902,7 @@ body.layout-authenticated {
     color: var(--lu-danger);
 }
 
-/* =========================================================
-   GENERAL STATUS
-   ========================================================= */
+/* GENERAL STATUS */
 
 .status-badge {
     padding: .2rem .7rem;
@@ -995,9 +924,7 @@ body.layout-authenticated {
     color: #922B21;
 }
 
-/* =========================================================
-   PAGE HEADERS
-   ========================================================= */
+/* PAGE HEADERS */
 
 .page-header {
     padding: 1.4rem 0 1rem;
@@ -1020,9 +947,7 @@ body.layout-authenticated {
     color: var(--lu-gold);
 }
 
-/* =========================================================
-   SECTION DIVIDER
-   ========================================================= */
+/* SECTION DIVIDER */
 
 .section-divider {
     display: flex;
@@ -1044,9 +969,7 @@ body.layout-authenticated {
     background: var(--lu-gray-300);
 }
 
-/* =========================================================
-   EMPTY STATES
-   ========================================================= */
+/* EMPTY STATES */
 
 .empty-state {
     text-align: center;
@@ -1065,9 +988,7 @@ body.layout-authenticated {
     margin-bottom: .5rem;
 }
 
-/* =========================================================
-   PUBLIC LANDING HERO
-   ========================================================= */
+/* PUBLIC LANDING HERO */
 
 .lu-hero {
     min-height: 100vh;
@@ -1119,9 +1040,7 @@ body.layout-authenticated {
     color: var(--lu-gold);
 }
 
-/* =========================================================
-   LOGIN / REGISTER
-   ========================================================= */
+/* LOGIN / REGISTER */
 
 .auth-page {
     min-height: 100vh;
@@ -1141,10 +1060,9 @@ body.layout-authenticated {
     max-width: 440px;
     background: var(--lu-surface);
     border-radius: 1.25rem !important;
-    /* =====================================================
-       SOMBRA PERSONALIZADA DEL LOGIN
+    /* SOMBRA PERSONALIZADA DEL LOGIN
        SE MANTIENE INTACTA
-       ===================================================== */
+    */
 
     box-shadow: 0 24px 60px rgb(0 80 255 / 40%) !important;
     overflow: hidden;
@@ -1267,9 +1185,7 @@ body.layout-authenticated {
     }
 }
 
-/* =========================================================
-   PROFILE PAGE
-   ========================================================= */
+/* PROFILE PAGE */
 
 .profile-header {
     background: linear-gradient(135deg, var(--lu-navy-dark) 0%, var(--lu-navy-mid) 100%);
@@ -1294,9 +1210,7 @@ body.layout-authenticated {
     box-shadow: 0 4px 16px rgba(0, 0, 0, .20);
 }
 
-/* =========================================================
-   TABLES
-   ========================================================= */
+/* TABLES */
 
 .lu-table {
     width: 100%;
@@ -1330,9 +1244,7 @@ body.layout-authenticated {
     border-bottom: none;
 }
 
-/* =========================================================
-   STATS
-   ========================================================= */
+/* STATS */
 
 .stats-strip {
     display: flex;
@@ -1385,13 +1297,11 @@ body.layout-authenticated {
     color: var(--lu-danger);
 }
 
-/* =========================================================
-   GHOST BUTTON
-   ========================================================= */
+/* GHOST BUTTON */
 
 .btn-ghost {
     background: transparent;
-    border: 1.5px solid var(--lu-border);
+    border: 1.5px solid var(--lu-gray-100);
     color: var(--lu-text);
 }
 
@@ -1400,9 +1310,7 @@ body.layout-authenticated {
     color: var(--lu-text);
 }
 
-/* =========================================================
-   ICON BUTTON
-   ========================================================= */
+/* ICON BUTTON */
 
 .btn-icon {
     width: 36px;
@@ -1412,7 +1320,7 @@ body.layout-authenticated {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    border: 1.5px solid var(--lu-border);
+    border: 1.5px solid var(--lu-gray-100);
     background: var(--lu-surface);
     color: var(--lu-text);
     transition: all var(--lu-transition);
@@ -1437,9 +1345,7 @@ body.layout-authenticated {
     font-size: .8rem;
 }
 
-/* =========================================================
-   TOASTS
-   ========================================================= */
+/* TOASTS */
 
 .lu-toast-container {
     position: fixed;
@@ -1460,7 +1366,7 @@ body.layout-authenticated {
     color: var(--lu-text);
     border-radius: var(--lu-radius-sm);
     box-shadow: var(--lu-shadow-md);
-    border-left: 4px solid var(--lu-primary);
+    border-left: 4px solid var(--lu-navy);
     padding: .8rem 1rem;
     font-size: .875rem;
     animation: lu-toast-in .25s ease both;
@@ -1540,9 +1446,7 @@ body.layout-authenticated {
     }
 }
 
-/* =========================================================
-   MODALS
-   ========================================================= */
+/* MODALS */
 
 .modal-content {
     border: none;
@@ -1554,7 +1458,7 @@ body.layout-authenticated {
 }
 
 .modal-header {
-    border-bottom: 1px solid var(--lu-border);
+    border-bottom: 1px solid var(--lu-gray-100);
     padding: 1.1rem 1.4rem;
 }
 
@@ -1571,7 +1475,7 @@ body.layout-authenticated {
 }
 
 .modal-footer {
-    border-top: 1px solid var(--lu-border);
+    border-top: 1px solid var(--lu-gray-100);
     padding: 1rem 1.4rem;
 }
 
@@ -1579,9 +1483,7 @@ body.layout-authenticated {
     transition: transform .2s ease, opacity .2s ease;
 }
 
-/* =========================================================
-   BOTTOM NAVIGATION
-   ========================================================= */
+/* BOTTOM NAVIGATION */
 
 .bottom-nav {
     display: none;
@@ -1597,7 +1499,7 @@ body.layout-authenticated {
         bottom: 0;
         z-index: 1030;
         background: var(--lu-surface);
-        border-top: 1px solid var(--lu-border);
+        border-top: 1px solid var(--lu-gray-100);
         box-shadow: 0 -2px 16px rgba(0, 32, 96, .08);
         padding: .4rem .25rem;
         padding-bottom: calc(.4rem + env(safe-area-inset-bottom));
@@ -1624,13 +1526,13 @@ body.layout-authenticated {
 
     .bottom-nav-item.active,
     .bottom-nav-item:hover {
-        color: var(--lu-primary);
+        color: var(--lu-navy);
     }
 
     .bottom-nav-item .bottom-nav-badge {
         position: absolute;
         transform: translate(10px, -8px);
-        background: var(--lu-accent);
+        background: var(--lu-gold);
         color: var(--lu-navy-dark);
         font-size: .62rem;
         font-weight: 700;
@@ -1641,9 +1543,7 @@ body.layout-authenticated {
     }
 }
 
-/* =========================================================
-   CONFIRMATION CARDS
-   ========================================================= */
+/* CONFIRMATION CARDS */
 
 .confirm-card {
     max-width: 480px;
@@ -1680,9 +1580,7 @@ body.layout-authenticated {
     color: var(--lu-success);
 }
 
-/* =========================================================
-   YOUTUBE
-   ========================================================= */
+/* YOUTUBE */
 
 .yt-embed {
     border-radius: var(--lu-radius);
@@ -1690,9 +1588,7 @@ body.layout-authenticated {
     box-shadow: var(--lu-shadow);
 }
 
-/* =========================================================
-   UTILITIES
-   ========================================================= */
+/* UTILITIES */
 .text-gold {
     color: var(--lu-gold) !important;
 }
@@ -1745,9 +1641,7 @@ body.layout-authenticated {
     box-shadow: var(--lu-shadow-md) !important;
 }
 
-/* =========================================================
-   ANIMATIONS
-   ========================================================= */
+/* ANIMATIONS */
 
 @keyframes fadeInUp {
 
@@ -1765,7 +1659,6 @@ body.layout-authenticated {
 .fade-in-up {
     animation: fadeInUp .35s ease both;
 }
-
 
 @keyframes shimmer {
 
@@ -1785,9 +1678,7 @@ body.layout-authenticated {
     border-radius: var(--lu-radius-sm);
 }
 
-/* =========================================================
-   TURN INDICATOR
-   ========================================================= */
+/* TURN INDICATOR */
 
 .turn-banner {
     display: flex;
@@ -1813,9 +1704,7 @@ body.layout-authenticated {
     border: 1.5px solid var(--lu-gold);
 }
 
-/* =========================================================
-   ACCESSIBILITY
-   ========================================================= */
+/* ACCESSIBILITY */
 
 a:focus-visible,
 button:focus-visible,
@@ -1828,9 +1717,7 @@ select:focus-visible {
     outline-offset: 2px;
 }
 
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
+/* RESPONSIVE */
 
 @media (max-width: 768px) {
 
@@ -1862,7 +1749,6 @@ select:focus-visible {
     }
 }
 
-
 @media (max-width: 576px) {
 
     .battleship-board td {
@@ -1891,9 +1777,7 @@ select:focus-visible {
     }
 }
 
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
+/* REDUCED MOTION */
 
 @media (prefers-reduced-motion: reduce) {
 
