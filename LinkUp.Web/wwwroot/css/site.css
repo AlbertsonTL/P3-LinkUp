@@ -1057,13 +1057,10 @@ body.layout-authenticated {
 
 .auth-card {
     width: 100%;
-    max-width: 440px;
+    max-width: 350px;
     background: var(--lu-surface);
+    border: 1px solid rgb(0 80 255 / 20%) !important;
     border-radius: 1.25rem !important;
-    /* SOMBRA PERSONALIZADA DEL LOGIN
-       SE MANTIENE INTACTA
-    */
-
     box-shadow: 0 24px 60px rgb(0 80 255 / 40%) !important;
     overflow: hidden;
 }
@@ -1073,7 +1070,7 @@ body.layout-authenticated {
 .auth-card-header {
     position: relative;
     overflow: hidden;
-    padding: 3rem 2rem 3.5rem;
+    padding: 1rem 2rem 1.5rem;
     text-align: center;
     color: var(--lu-white);
     background-image: radial-gradient(circle, rgba(255, 255, 255, .10) 1px, transparent 1px), linear-gradient(135deg, var(--lu-navy-dark) 0%, var(--lu-navy) 50%, var(--lu-teal) 120%);
@@ -1087,8 +1084,8 @@ body.layout-authenticated {
     position: absolute;
     left: -15%;
     right: -15%;
-    bottom: -1px;
-    height: 42px;
+    bottom: -10px;
+    height: 30px;
     background: var(--lu-surface);
     border-radius: 50% 50% 0 0 / 100% 100% 0 0;
     z-index: 1;
@@ -1101,7 +1098,7 @@ body.layout-authenticated {
     z-index: 2;
     width: 76px;
     height: 76px;
-    margin: 0 auto 1rem;
+    margin: 0 auto 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1128,7 +1125,7 @@ body.layout-authenticated {
 .auth-title {
     position: relative;
     z-index: 2;
-    margin: 0 0 .25rem;
+    margin: 0;
     font-family: var(--lu-font-heading);
     font-size: 1.5rem;
     font-weight: 800;
@@ -1149,7 +1146,7 @@ body.layout-authenticated {
 /* Login body */
 
 .auth-card-body {
-    padding: 2rem;
+    padding: 0rem 1.5rem 1.5rem;
 }
 
 /* Login input icons */
@@ -1242,6 +1239,34 @@ body.layout-authenticated {
 
 .lu-table tbody tr:last-child td {
     border-bottom: none;
+}
+
+/* BOOTSTRAP TABLE */
+
+.table {
+    --bs-table-color: var(--lu-text);
+    --bs-table-bg: transparent;
+    --bs-table-border-color: var(--lu-gray-300);
+    --bs-table-striped-color: var(--lu-text);
+    --bs-table-striped-bg: var(--lu-gray-100);
+    --bs-table-active-color: var(--lu-text);
+    --bs-table-active-bg: var(--lu-gray-100);
+    --bs-table-hover-color: var(--lu-text);
+    --bs-table-hover-bg: var(--lu-gray-100);
+    color: var(--lu-text);
+    vertical-align: middle;
+}
+
+    .table thead th {
+        color: var(--lu-text);
+        border-bottom-color: var(--lu-gray-300);
+    }
+
+.table-hover > tbody > tr:hover,
+.table-hover > tbody > tr:active,
+.table-hover > tbody > tr:focus-within {
+    color: var(--lu-text) !important;
+    background-color: var(--lu-gray-100) !important;
 }
 
 /* STATS */
@@ -1736,7 +1761,7 @@ select:focus-visible {
     }
 
     .auth-card-body {
-        padding: 1.5rem;
+        padding: 0.5rem 1.5rem 1.5rem;
     }
 
     .card-body {
