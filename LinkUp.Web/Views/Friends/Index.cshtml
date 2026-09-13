@@ -72,46 +72,7 @@
                         </div>
                     }
 
-                    @foreach (var friend in Model.Friends)
-                    {
-                        <div class="modal fade" id="removeFriendModal-@friend.Id" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title"><i class="fas fa-user-minus text-danger"></i>¿Eliminar amigo?</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="d-flex align-items-center gap-3 mb-3">
-                                            @if (friend.ProfilePicture != null)
-                                            {
-                                                <img src="@friend.ProfilePicture" class="avatar" alt="@friend.UserName" />
-                                            }
-                                            else
-                                            {
-                                                <div class="avatar-placeholder" style="width:42px;height:42px">@friend.UserName.First().ToString().ToUpper()</div>
-                                            }
-                                            <span class="fw-700">@friend.UserName</span>
-                                        </div>
-                                        <p class="text-muted mb-0">
-                                            ¿Seguro que deseas eliminar a <strong>@friend.UserName</strong> de tu lista de amigos?
-                                            Sus publicaciones ya no aparecerán en tu feed.
-                                        </p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
-                                        <form asp-controller="Friends" asp-action="Remove" method="post">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="friendId" value="@friend.Id" />
-                                            <button type="submit" class="btn btn-danger">
-                                                <i class="fas fa-check me-2"></i>Sí, eliminar
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
+                    <!-- Modals moved to bottom of the page to avoid stacking-context issues -->
                 }
                 else
                 {
@@ -127,3 +88,48 @@
         </div>
     </div>
 </div>
+
+@* Render modals at the end of the page (direct child of body) to avoid stacking context problems *@
+@if (Model.Friends != null && Model.Friends.Any())
+{
+    @foreach (var friend in Model.Friends)
+    {
+        <div class="modal fade" id="removeFriendModal-@friend.Id" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="fas fa-user-minus text-danger"></i>¿Eliminar amigo?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            @if (friend.ProfilePicture != null)
+                            {
+                                <img src="@friend.ProfilePicture" class="avatar" alt="@friend.UserName" />
+                            }
+                            else
+                            {
+                                <div class="avatar-placeholder" style="width:42px;height:42px">@friend.UserName.First().ToString().ToUpper()</div>
+                            }
+                            <span class="fw-700">@friend.UserName</span>
+                        </div>
+                        <p class="text-muted mb-0">
+                            ¿Seguro que deseas eliminar a <strong>@friend.UserName</strong> de tu lista de amigos?
+                            Sus publicaciones ya no aparecerán en tu feed.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+                        <form asp-controller="Friends" asp-action="Remove" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="friendId" value="@friend.Id" />
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-check me-2"></i>Sí, eliminar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

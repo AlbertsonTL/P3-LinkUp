@@ -10,7 +10,7 @@
             <div class="brand-logo">
                 <img src="/favicon.ico" alt="LinkUp" />
             </div>
-            <h2 class="fw-800 mb-1" style="font-size:1.5rem">LinkUp</h2>
+            <h2 class="fw-800" style="font-size:1.5rem">LinkUp</h2>
             <p class="mb-0" style="opacity:.75;font-size:.88rem">Inicia sesión para continuar</p>
         </div>
         <div class="auth-card-body">
@@ -35,7 +35,7 @@
                 }
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                <div class="mb-3">
+                <div class="mb-2">
                     <label asp-for="UserName" class="form-label">Usuario</label>
                     <div class="input-group">
                         <span class="input-group-text">
@@ -45,7 +45,7 @@
                     </div>
                     <span asp-validation-for="UserName" class="text-danger small"></span>
                 </div>
-                <div class="mb-4">
+                <div class="mb-3">
                     <label asp-for="Password" class="form-label">Contraseña</label>
                     <div class="input-group">
                         <span class="input-group-text">
@@ -56,7 +56,7 @@
                     <span asp-validation-for="Password" class="text-danger small"></span>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100 mb-3" style="padding:.65rem">
+                <button type="submit" class="btn btn-primary w-100" style="padding:.65rem">
                     <i class="fas fa-sign-in-alt me-2"></i>Iniciar sesión
                 </button>
             </form>
